@@ -21,7 +21,7 @@ const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const mainMenuItems = [
-    { name: "Dashboard", icon: LayoutDashboard },
+    { name: "POS", icon: LayoutDashboard },
     { name: "Menu", icon: Coffee },
     { name: "Orders", icon: ShoppingBag },
     { name: "Customers", icon: Users },

@@ -4,6 +4,7 @@ import Sidebar from "./components/Sidebar";
 import HomePage from "./pages/home/HomePage";
 import Login from "./pages/auth/Login";
 import LoginPage from "./pages/auth/Login";
+import PosScreen from "./pages/pos/PosScreen";
 
 function App() {
   return (
@@ -13,7 +14,8 @@ function App() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route element={<Sidebar />}>
-              <Route path="/" element={<HomePage />} />
+              {/* <Route path="/" element={<HomePage />} /> */}
+              <Route path="/" element={<PosScreen />} />
             </Route>
           </Routes>
         </Router>
