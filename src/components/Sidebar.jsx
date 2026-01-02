@@ -23,11 +23,11 @@ const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const mainMenuItems = [
-    { name: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
+    { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
     { name: "POS", icon: Coffee, path: "/" },
-    { name: "Products", icon: ShoppingBag, path: "/admin/products" },
-    { name: "Sales", icon: BarChart3, path: "/admin/sales" },
-    { name: "Settings", icon: Settings, path: "/admin/settings" },
+    { name: "Products", icon: ShoppingBag, path: "/products" },
+    { name: "Sales", icon: BarChart3, path: "/sales" },
+    { name: "Settings", icon: Settings, path: "/settings" },
     { name: "Logout", icon: LogOut, path: "/login" },
   ];
 
