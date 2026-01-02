@@ -217,7 +217,7 @@ const PosScreen = () => {
 
   /* ------------------ UI ------------------ */
   return (
-    <div className="h-[85vh] p-4 ">
+    <div className="h-screen p-4 ">
       <div className="h-full flex flex-col border-2 border-slate-200 rounded-3xl bg-white overflow-hidden">
         {/* MAIN */}
         <div className="flex flex-1 overflow-hidden">

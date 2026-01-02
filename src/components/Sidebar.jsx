@@ -147,13 +147,32 @@ const Sidebar = () => {
               </button>
             </nav>
           </div>
+          {/* Bottom Left User Info */}
+          <div className="absolute bottom-4 left-4 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-teal-100 flex items-center justify-center">
+              <User className="w-4 h-4 text-teal-600" />
+            </div>
+
+            <div className="flex flex-col leading-tight">
+              <span className="text-sm font-semibold text-slate-800">
+                {user?.name || "User"}
+              </span>
+
+              <span
+                className={`text-xs capitalize
+        ${role === "admin" ? "text-indigo-600" : "text-emerald-600"}`}
+              >
+                {role}
+              </span>
+            </div>
+          </div>
         </aside>
 
         {/* Main Content */}
         <div className="p-4 sm:ml-64 bg-bgColor min-h-screen">
           <div className="bg-white p-6 border border-gray-200 rounded-2xl shadow-sm flex flex-col min-h-[85vh]">
             {/* Header */}
-            <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6 border-b pb-4">
+            {/* <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6 border-b pb-4">
               <h1 className="text-2xl font-semibold text-gray-800">
                 {activeItem}
               </h1>
@@ -173,7 +192,7 @@ const Sidebar = () => {
                   </div>
                 </div>
               </div>
-            </header>
+            </header> */}
 
             {/* Page Content */}
             <div className="flex-grow">
