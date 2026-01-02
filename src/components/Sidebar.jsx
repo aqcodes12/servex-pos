@@ -13,7 +13,7 @@ import {
   User,
 } from "lucide-react";
 import { Outlet } from "react-router-dom";
-import BrandLogo from "../assets/daily.png";
+import BrandLogo from "../assets/favicon.png";
 import Footer from "./Footer";
 
 const Sidebar = () => {
