@@ -143,15 +143,6 @@ const Sidebar = () => {
               </h1>
 
               <div className="hidden sm:flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full sm:w-auto">
-                <div className="relative w-full sm:w-64">
-                  <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-primary focus:border-primary outline-none"
-                  />
-                </div>
-
                 <div className="flex items-center gap-4">
                   <button className="p-2 hover:bg-gray-100 rounded-full">
                     <Bell className="w-5 h-5 text-gray-600" />
@@ -161,7 +152,7 @@ const Sidebar = () => {
                       <User className="w-5 h-5 text-gray-600" />
                     </div>
                     <span className="text-sm font-medium text-gray-700">
-                      Zain Baig
+                      {user.name}
                     </span>
                   </div>
                 </div>
