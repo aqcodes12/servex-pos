@@ -7,9 +7,9 @@ const MoneyValue = ({
   textClassName = "",
 }) => {
   return (
-    <span className={`inline-flex items-center gap-1 ${textClassName}`}>
+    <span className={`inline-flex items-center gap-1`}>
       <CurrencyIcon size={size} className={iconClassName} />
-      <span>
+      <span className={`${textClassName}`}>
         {amount.toLocaleString("en-IN", {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
