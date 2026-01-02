@@ -62,12 +62,22 @@ const PosScreen = () => {
           {/* LEFT: PRODUCTS */}
           <div className="flex-1 p-3 flex flex-col overflow-hidden">
             {/* Search */}
+
             <input
               type="text"
               placeholder="Search products..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="mb-3 px-4 py-2 rounded-lg border focus:ring-2 focus:ring-teal-500"
+              className="
+    w-full mb-4
+    px-5 py-3
+    text-lg
+    rounded-xl
+    border border-slate-300
+    bg-white
+    focus:outline-none
+    focus:ring-2 focus:ring-teal-500
+  "
             />
 
             {/* Categories */}
@@ -79,11 +89,19 @@ const PosScreen = () => {
                     setActiveCategory(cat.category);
                     setSearch("");
                   }}
-                  className={`px-4 py-2 rounded-full whitespace-nowrap ${
-                    activeCategory === cat.category
-                      ? "bg-teal-500 text-white"
-                      : "bg-white border"
-                  }`}
+                  className={`
+    px-6 py-3
+    text-lg font-semibold
+    rounded-full
+    whitespace-nowrap
+    transition-all
+    active:scale-95
+    ${
+      activeCategory === cat.category
+        ? "bg-teal-500 text-white shadow"
+        : "bg-white border border-slate-300 text-slate-700"
+    }
+  `}
                 >
                   {cat.category}
                 </button>
@@ -124,7 +142,7 @@ const PosScreen = () => {
             </div>
 
             {/* Total */}
-            <div className="p-4 border-t-2 border-gray-200">
+            <div className="p-4 border-t-2 border-gray-200 pt-2">
               <div className="flex justify-between font-semibold text-lg">
                 <span>Total</span>
                 <span>
