@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { TrendingUp, ShoppingCart, Package, DollarSign } from "lucide-react";
+import MoneyValue from "../../components/MoneyValue";
 
 const Dashboard = () => {
   const [stats] = useState({
@@ -12,10 +13,7 @@ const Dashboard = () => {
   const cards = [
     {
       title: "Total Sales Today",
-      value: `$${stats.totalSales.toLocaleString("en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })}`,
+      value: <MoneyValue amount={stats.totalSales} size={20} />,
       icon: DollarSign,
       color: "bg-secondary",
       textColor: "text-secondary",
@@ -36,10 +34,7 @@ const Dashboard = () => {
     },
     {
       title: "Profit Today",
-      value: `$${stats.profit.toLocaleString("en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })}`,
+      value: <MoneyValue amount={stats.profit} size={20} />,
       icon: TrendingUp,
       color: "bg-green-500",
       textColor: "text-green-500",
