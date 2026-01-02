@@ -21,14 +21,13 @@ const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const mainMenuItems = [
-    { name: "POS", icon: LayoutDashboard },
-    { name: "Menu", icon: Coffee },
-    { name: "Orders", icon: ShoppingBag },
-    { name: "Customers", icon: Users },
-    { name: "Analytics Report", icon: BarChart3 },
+    { name: "Dashboard", icon: LayoutDashboard },
+    { name: "POS", icon: Coffee },
+    { name: "Products", icon: ShoppingBag },
+    { name: "Sales", icon: Users },
+    { name: "Settings", icon: BarChart3 },
+    { name: "Logout", icon: User },
   ];
-
-  const otherItems = [{ name: "Advance Settings", icon: Settings }];
 
   const handleMenuClick = (itemName) => {
     setActiveItem(itemName);
@@ -78,35 +77,6 @@ const Sidebar = () => {
                   className={`w-full flex items-center gap-3 px-4 py-2 rounded-sm transition-colors ${
                     isActive
                       ? "bg-white text-primary border-l-4 border-primary"
-                      : "text-gray-600 hover:bg-gray-50"
-                  }`}
-                >
-                  <Icon
-                    className={`w-6 h-6 ${
-                      isActive ? "text-primary" : "text-gray-400"
-                    }`}
-                  />
-                  <span className="text-base font-medium">{item.name}</span>
-                </button>
-              );
-            })}
-          </nav>
-        </div>
-
-        {/* Other Section */}
-        <div className="px-6 pb-8">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Others</h3>
-          <nav className="space-y-1">
-            {otherItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = activeItem === item.name;
-              return (
-                <button
-                  key={item.name}
-                  onClick={() => handleMenuClick(item.name)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                    isActive
-                      ? "bg-emerald-50 text-primary border-l-4 border-primary"
                       : "text-gray-600 hover:bg-gray-50"
                   }`}
                 >
