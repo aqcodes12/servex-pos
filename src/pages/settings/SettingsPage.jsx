@@ -2,6 +2,14 @@ import React, { useState } from "react";
 import { Store, User, Lock, Eye, EyeOff, X } from "lucide-react";
 
 const SettingsPage = () => {
+  const TABS = [
+    { id: "shop", label: "Shop Info", icon: Store },
+    { id: "cashier", label: "Cashier Account", icon: User },
+    { id: "security", label: "Security", icon: Lock },
+  ];
+
+  const [activeTab, setActiveTab] = useState("shop");
+
   const [shopInfo, setShopInfo] = useState({
     shopName: "My Coffee Shop",
     trn: "123456789",
@@ -91,262 +99,290 @@ const SettingsPage = () => {
           </p>
         </div>
 
+        {/* Tabs */}
+        <div className="mb-6 border-b border-gray-200">
+          <div className="flex gap-6">
+            {TABS.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id)}
+                className={`flex items-center gap-2 pb-3 text-sm font-medium transition-colors
+          ${
+            activeTab === id
+              ? "border-b-2 border-secondary text-secondary"
+              : "text-gray-500 hover:text-primary"
+          }
+        `}
+              >
+                <Icon className="w-4 h-4" />
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="space-y-6">
           {/* SECTION 1: Shop Information */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-secondary bg-opacity-10 rounded-lg">
-                  <Store className="w-5 h-5 text-secondary" />
+          {activeTab === "shop" && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-secondary bg-opacity-10 rounded-lg">
+                    <Store className="w-5 h-5 text-secondary" />
+                  </div>
+                  <h2 className="text-xl font-bold text-primary">
+                    Shop Information
+                  </h2>
                 </div>
-                <h2 className="text-xl font-bold text-primary">
-                  Shop Information
-                </h2>
+              </div>
+
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-text mb-2">
+                    Shop Name
+                  </label>
+                  <input
+                    type="text"
+                    value={shopInfo.shopName}
+                    onChange={(e) =>
+                      setShopInfo({ ...shopInfo, shopName: e.target.value })
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
+                    placeholder="Enter shop name"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text mb-2">
+                    TRN (Tax Registration Number)
+                  </label>
+                  <input
+                    type="text"
+                    value={shopInfo.trn}
+                    onChange={(e) =>
+                      setShopInfo({ ...shopInfo, trn: e.target.value })
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
+                    placeholder="Enter TRN"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text mb-2">
+                    Address
+                  </label>
+                  <textarea
+                    value={shopInfo.address}
+                    onChange={(e) =>
+                      setShopInfo({ ...shopInfo, address: e.target.value })
+                    }
+                    rows="3"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
+                    placeholder="Enter shop address"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text mb-2">
+                    Phone
+                  </label>
+                  <input
+                    type="tel"
+                    value={shopInfo.phone}
+                    onChange={(e) =>
+                      setShopInfo({ ...shopInfo, phone: e.target.value })
+                    }
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
+                    placeholder="Enter phone number"
+                  />
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    onClick={handleSaveShopInfo}
+                    className="w-full sm:w-auto px-6 py-3 bg-secondary text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium"
+                  >
+                    Save Shop Information
+                  </button>
+                </div>
               </div>
             </div>
-
-            <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-text mb-2">
-                  Shop Name
-                </label>
-                <input
-                  type="text"
-                  value={shopInfo.shopName}
-                  onChange={(e) =>
-                    setShopInfo({ ...shopInfo, shopName: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
-                  placeholder="Enter shop name"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-text mb-2">
-                  TRN (Tax Registration Number)
-                </label>
-                <input
-                  type="text"
-                  value={shopInfo.trn}
-                  onChange={(e) =>
-                    setShopInfo({ ...shopInfo, trn: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
-                  placeholder="Enter TRN"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-text mb-2">
-                  Address
-                </label>
-                <textarea
-                  value={shopInfo.address}
-                  onChange={(e) =>
-                    setShopInfo({ ...shopInfo, address: e.target.value })
-                  }
-                  rows="3"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
-                  placeholder="Enter shop address"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-text mb-2">
-                  Phone
-                </label>
-                <input
-                  type="tel"
-                  value={shopInfo.phone}
-                  onChange={(e) =>
-                    setShopInfo({ ...shopInfo, phone: e.target.value })
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
-                  placeholder="Enter phone number"
-                />
-              </div>
-
-              <div className="pt-2">
-                <button
-                  onClick={handleSaveShopInfo}
-                  className="w-full sm:w-auto px-6 py-3 bg-secondary text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium"
-                >
-                  Save Shop Information
-                </button>
-              </div>
-            </div>
-          </div>
+          )}
 
           {/* SECTION 2: Cashier Account */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-500 bg-opacity-10 rounded-lg">
-                  <User className="w-5 h-5 text-blue-500" />
-                </div>
-                <h2 className="text-xl font-bold text-primary">
-                  Cashier Account
-                </h2>
-              </div>
-            </div>
-
-            <div className="p-6">
-              <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                <h3 className="font-semibold text-text mb-3">
-                  Cashier Login Details
-                </h3>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                      Username / Email
-                    </label>
-                    <input
-                      type="text"
-                      value={cashierInfo.email}
-                      readOnly
-                      className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700"
-                    />
+          {activeTab === "cashier" && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-500 bg-opacity-10 rounded-lg">
+                    <User className="w-5 h-5 text-blue-500" />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      value="••••••••"
-                      readOnly
-                      className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700"
-                    />
+                  <h2 className="text-xl font-bold text-primary">
+                    Cashier Account
+                  </h2>
+                </div>
+              </div>
+
+              <div className="p-6">
+                <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                  <h3 className="font-semibold text-text mb-3">
+                    Cashier Login Details
+                  </h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">
+                        Username / Email
+                      </label>
+                      <input
+                        type="text"
+                        value={cashierInfo.email}
+                        readOnly
+                        className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">
+                        Password
+                      </label>
+                      <input
+                        type="password"
+                        value="••••••••"
+                        readOnly
+                        className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <button
-                onClick={() => setShowResetModal(true)}
-                className="w-full sm:w-auto px-6 py-3 bg-accent text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium"
-              >
-                Reset Cashier Password
-              </button>
-            </div>
-          </div>
-
-          {/* SECTION 3: Change Admin Password */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-500 bg-opacity-10 rounded-lg">
-                  <Lock className="w-5 h-5 text-red-500" />
-                </div>
-                <h2 className="text-xl font-bold text-primary">
-                  Change Admin Password
-                </h2>
-              </div>
-            </div>
-
-            <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-text mb-2">
-                  Current Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPasswords.adminCurrent ? "text" : "password"}
-                    value={adminPassword.current}
-                    onChange={(e) =>
-                      setAdminPassword({
-                        ...adminPassword,
-                        current: e.target.value,
-                      })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent pr-12"
-                    placeholder="Enter current password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => togglePasswordVisibility("adminCurrent")}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPasswords.adminCurrent ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-text mb-2">
-                  New Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPasswords.adminNew ? "text" : "password"}
-                    value={adminPassword.newPassword}
-                    onChange={(e) =>
-                      setAdminPassword({
-                        ...adminPassword,
-                        newPassword: e.target.value,
-                      })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent pr-12"
-                    placeholder="Enter new password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => togglePasswordVisibility("adminNew")}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPasswords.adminNew ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-text mb-2">
-                  Confirm New Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPasswords.adminConfirm ? "text" : "password"}
-                    value={adminPassword.confirm}
-                    onChange={(e) =>
-                      setAdminPassword({
-                        ...adminPassword,
-                        confirm: e.target.value,
-                      })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent pr-12"
-                    placeholder="Confirm new password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => togglePasswordVisibility("adminConfirm")}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPasswords.adminConfirm ? (
-                      <EyeOff className="w-5 h-5" />
-                    ) : (
-                      <Eye className="w-5 h-5" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              <div className="pt-2">
                 <button
-                  onClick={handleUpdateAdminPassword}
-                  className="w-full sm:w-auto px-6 py-3 bg-primary text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium"
+                  onClick={() => setShowResetModal(true)}
+                  className="w-full sm:w-auto px-6 py-3 bg-accent text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium"
                 >
-                  Update Admin Password
+                  Reset Cashier Password
                 </button>
               </div>
             </div>
-          </div>
+          )}
+
+          {/* SECTION 3: Change Admin Password */}
+          {activeTab === "security" && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-red-500 bg-opacity-10 rounded-lg">
+                    <Lock className="w-5 h-5 text-red-500" />
+                  </div>
+                  <h2 className="text-xl font-bold text-primary">
+                    Change Admin Password
+                  </h2>
+                </div>
+              </div>
+
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-text mb-2">
+                    Current Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPasswords.adminCurrent ? "text" : "password"}
+                      value={adminPassword.current}
+                      onChange={(e) =>
+                        setAdminPassword({
+                          ...adminPassword,
+                          current: e.target.value,
+                        })
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent pr-12"
+                      placeholder="Enter current password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => togglePasswordVisibility("adminCurrent")}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      {showPasswords.adminCurrent ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text mb-2">
+                    New Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPasswords.adminNew ? "text" : "password"}
+                      value={adminPassword.newPassword}
+                      onChange={(e) =>
+                        setAdminPassword({
+                          ...adminPassword,
+                          newPassword: e.target.value,
+                        })
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent pr-12"
+                      placeholder="Enter new password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => togglePasswordVisibility("adminNew")}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      {showPasswords.adminNew ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-text mb-2">
+                    Confirm New Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPasswords.adminConfirm ? "text" : "password"}
+                      value={adminPassword.confirm}
+                      onChange={(e) =>
+                        setAdminPassword({
+                          ...adminPassword,
+                          confirm: e.target.value,
+                        })
+                      }
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent pr-12"
+                      placeholder="Confirm new password"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => togglePasswordVisibility("adminConfirm")}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      {showPasswords.adminConfirm ? (
+                        <EyeOff className="w-5 h-5" />
+                      ) : (
+                        <Eye className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <button
+                    onClick={handleUpdateAdminPassword}
+                    className="w-full sm:w-auto px-6 py-3 bg-primary text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium"
+                  >
+                    Update Admin Password
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
