@@ -3,7 +3,6 @@ import {
   LayoutDashboard,
   Coffee,
   ShoppingBag,
-  Users,
   BarChart3,
   Settings,
   Menu,
@@ -11,27 +10,31 @@ import {
   Search,
   Bell,
   User,
+  LogOut,
 } from "lucide-react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import BrandLogo from "../assets/favicon.png";
 import Footer from "./Footer";
 
 const Sidebar = () => {
-  const [activeItem, setActiveItem] = useState("Dashboard");
+  const navigate = useNavigate();
+
+  const [activeItem, setActiveItem] = useState("POS");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const mainMenuItems = [
-    { name: "Dashboard", icon: LayoutDashboard },
-    { name: "POS", icon: Coffee },
-    { name: "Products", icon: ShoppingBag },
-    { name: "Sales", icon: Users },
-    { name: "Settings", icon: BarChart3 },
-    { name: "Logout", icon: User },
+    { name: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
+    { name: "POS", icon: Coffee, path: "/" },
+    { name: "Products", icon: ShoppingBag, path: "/admin/products" },
+    { name: "Sales", icon: BarChart3, path: "/admin/sales" },
+    { name: "Settings", icon: Settings, path: "/admin/settings" },
+    { name: "Logout", icon: LogOut, path: "/login" },
   ];
 
-  const handleMenuClick = (itemName) => {
-    setActiveItem(itemName);
+  const handleMenuClick = (item) => {
+    setActiveItem(item.name);
     setIsSidebarOpen(false);
+    navigate(item.path);
   };
 
   return (
@@ -66,14 +69,16 @@ const Sidebar = () => {
           <h3 className="text-lg font-semibold text-gray-800 mb-4">
             Main Menu
           </h3>
+
           <nav className="space-y-1">
             {mainMenuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeItem === item.name;
+
               return (
                 <button
                   key={item.name}
-                  onClick={() => handleMenuClick(item.name)}
+                  onClick={() => handleMenuClick(item)}
                   className={`w-full flex items-center gap-3 px-4 py-2 rounded-sm transition-colors ${
                     isActive
                       ? "bg-white text-primary border-l-4 border-primary"
@@ -96,13 +101,12 @@ const Sidebar = () => {
       {/* Main Content */}
       <div className="p-4 sm:ml-64 bg-bgColor min-h-screen">
         <div className="bg-white p-6 border border-gray-200 rounded-2xl shadow-sm flex flex-col min-h-[85vh]">
-          {/* ✅ Header Section */}
+          {/* Header */}
           <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6 border-b pb-4">
             <h1 className="text-2xl font-semibold text-gray-800">
               {activeItem}
             </h1>
 
-            {/* Right - Search & User Info */}
             <div className="hidden sm:flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full sm:w-auto">
               <div className="relative w-full sm:w-64">
                 <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
@@ -129,12 +133,11 @@ const Sidebar = () => {
             </div>
           </header>
 
-          {/* ✅ Page Content Area */}
+          {/* Page Content */}
           <div className="flex-grow">
             <Outlet />
           </div>
 
-          {/* ✅ Footer Section */}
           <Footer />
         </div>
       </div>
