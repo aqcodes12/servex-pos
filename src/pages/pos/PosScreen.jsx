@@ -117,7 +117,7 @@ const PosScreen = () => {
                 <div>
                   <p className="font-medium">{item.name}</p>
                   <p className="text-sm text-slate-500">
-                    ₹{item.price} × {item.qty}
+                    <MoneyValue amount={item.price} size={12} /> × {item.qty}
                   </p>
                 </div>
 
@@ -144,7 +144,9 @@ const PosScreen = () => {
           <div className="p-4 border-t">
             <div className="flex justify-between font-semibold text-lg">
               <span>Total</span>
-              <span>₹{total}</span>
+              <span>
+                <MoneyValue amount={total} size={14} />
+              </span>
             </div>
           </div>
         </div>
@@ -153,7 +155,9 @@ const PosScreen = () => {
       {/* BOTTOM BAR */}
       <div className="p-3 bg-white border-t">
         <div className="flex flex-col md:flex-row gap-2 items-center">
-          <div className="flex-1 text-lg font-semibold">Total: ₹{total}</div>
+          <div className="flex-1 text-lg font-semibold">
+            Total: <MoneyValue amount={total} size={14} />
+          </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2 flex-1">
             <button
