@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Edit2, Trash2, Plus, X, Search } from "lucide-react";
+import MoneyValue from "../../components/MoneyValue";
 
 const ProductsPage = () => {
   const [products, setProducts] = useState([
@@ -195,10 +196,10 @@ const ProductsPage = () => {
                     </td>
                     <td className="px-6 py-4 text-text">{product.category}</td>
                     <td className="px-6 py-4 text-text">
-                      ${product.sellingPrice.toFixed(2)}
+                      <MoneyValue amount={product.sellingPrice} size={12} />
                     </td>
                     <td className="px-6 py-4 text-text">
-                      ${product.costPrice.toFixed(2)}
+                      <MoneyValue amount={product.costPrice} size={12} />
                     </td>
                     <td className="px-6 py-4">
                       <button

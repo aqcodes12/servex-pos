@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Eye, Printer, Search, X, Calendar } from "lucide-react";
+import MoneyValue from "../../components/MoneyValue";
 
 const SalesPage = () => {
   const [sales] = useState([
@@ -169,7 +170,7 @@ const SalesPage = () => {
                     </td>
                     <td className="px-6 py-4">
                       <span className="font-semibold text-primary">
-                        ${sale.totalAmount.toFixed(2)}
+                        <MoneyValue amount={sale.totalAmount} size={12} />
                       </span>
                     </td>
                     <td className="px-6 py-4">
@@ -286,10 +287,13 @@ const SalesPage = () => {
                           {item.quantity}
                         </td>
                         <td className="py-3 text-right text-text">
-                          ${item.price.toFixed(2)}
+                          <MoneyValue amount={item.price} size={12} />
                         </td>
                         <td className="py-3 text-right font-medium text-text">
-                          ${(item.quantity * item.price).toFixed(2)}
+                          <MoneyValue
+                            amount={item.quantity * item.price}
+                            size={12}
+                          />
                         </td>
                       </tr>
                     ))}
@@ -304,7 +308,7 @@ const SalesPage = () => {
                       Total Amount:
                     </span>
                     <span className="text-lg font-bold text-primary">
-                      ${selectedSale.totalAmount.toFixed(2)}
+                      <MoneyValue amount={selectedSale.totalAmount} size={14} />
                     </span>
                   </div>
                   <div className="flex justify-between py-2">
