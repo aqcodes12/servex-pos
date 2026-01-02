@@ -22,13 +22,30 @@ const Sidebar = () => {
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const mainMenuItems = [
-    { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-    { name: "POS", icon: Coffee, path: "/" },
-    { name: "Products", icon: ShoppingBag, path: "/products" },
-    { name: "Sales", icon: BarChart3, path: "/sales" },
-    { name: "Settings", icon: Settings, path: "/settings" },
+  const user = JSON.parse(localStorage.getItem("pos_user"));
+  const role = user?.role; // "admin" | "cashier"
+
+  const allMenuItems = [
+    {
+      name: "Dashboard",
+      icon: LayoutDashboard,
+      path: "/dashboard",
+      roles: ["admin"],
+    },
+    { name: "POS", icon: Coffee, path: "/", roles: ["admin", "cashier"] },
+    {
+      name: "Products",
+      icon: ShoppingBag,
+      path: "/products",
+      roles: ["admin"],
+    },
+    { name: "Sales", icon: BarChart3, path: "/sales", roles: ["admin"] },
+    { name: "Settings", icon: Settings, path: "/settings", roles: ["admin"] },
   ];
+
+  const mainMenuItems = allMenuItems.filter((item) =>
+    item.roles.includes(role)
+  );
 
   const activeItem =
     mainMenuItems.find((item) =>

@@ -57,7 +57,7 @@ const LoginPage = () => {
     if (user.role === "admin") {
       navigate("/");
     } else {
-      navigate("/pos");
+      navigate("/");
     }
   };
 
