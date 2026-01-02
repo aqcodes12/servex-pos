@@ -136,19 +136,19 @@ const SalesPage = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-primary">
+                  <th className="px-6 py-4 text-left text-base font-semibold text-primary">
                     Date
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-primary">
+                  <th className="px-6 py-4 text-left text-base font-semibold text-primary">
                     Invoice #
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-primary">
+                  <th className="px-6 py-4 text-left text-base font-semibold text-primary">
                     Total Amount
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-primary">
+                  <th className="px-6 py-4 text-left text-base font-semibold text-primary">
                     Payment Mode
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-primary">
+                  <th className="px-6 py-4 text-left text-base font-semibold text-primary">
                     Actions
                   </th>
                 </tr>
@@ -159,23 +159,23 @@ const SalesPage = () => {
                     key={sale.id}
                     className="hover:bg-gray-50 transition-colors"
                   >
-                    <td className="px-6 py-4 text-text">
+                    <td className="px-6 py-4 text-lg font-semibold">
                       <div className="font-medium">{formatDate(sale.date)}</div>
                       <div className="text-sm text-gray-500">{sale.time}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="font-mono text-sm font-medium text-secondary">
+                      <span className="font-mono text-base font-medium text-secondary">
                         {sale.invoiceNumber}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="font-semibold text-primary">
+                      <span className="font-semibold text-primary text-lg">
                         <MoneyValue amount={sale.totalAmount} size={12} />
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       <span
-                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-base font-medium ${
                           sale.paymentMode === "Cash"
                             ? "bg-green-100 text-green-700"
                             : "bg-blue-100 text-blue-700"

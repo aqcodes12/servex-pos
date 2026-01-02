@@ -106,15 +106,20 @@ const SettingsPage = () => {
               <button
                 key={id}
                 onClick={() => setActiveTab(id)}
-                className={`flex items-center gap-2 pb-3 text-sm font-medium transition-colors
-          ${
-            activeTab === id
-              ? "border-b-2 border-secondary text-secondary"
-              : "text-gray-500 hover:text-primary"
-          }
-        `}
+                className={`
+    flex items-center gap-2
+    px-2 pb-3
+    text-lg font-semibold
+    transition-colors
+    border-b-2
+    ${
+      activeTab === id
+        ? "border-secondary text-secondary"
+        : "border-transparent text-slate-700 hover:text-primary"
+    }
+  `}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="w-5 h-5" />
                 {label}
               </button>
             ))}

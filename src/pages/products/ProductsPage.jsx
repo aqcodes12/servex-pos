@@ -165,22 +165,22 @@ const ProductsPage = () => {
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-primary">
+                  <th className="px-6 py-4 text-left text-base font-semibold text-primary">
                     Item Name
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-primary">
+                  <th className="px-6 py-4 text-left text-base font-semibold text-primary">
                     Category
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-primary">
+                  <th className="px-6 py-4 text-left text-base font-semibold text-primary">
                     Selling Price
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-primary">
+                  <th className="px-6 py-4 text-left text-base font-semibold text-primary">
                     Cost Price
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-primary">
+                  <th className="px-6 py-4 text-left text-base font-semibold text-primary">
                     Status
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-primary">
+                  <th className="px-6 py-4 text-left text-base font-semibold text-primary">
                     Actions
                   </th>
                 </tr>
@@ -191,14 +191,16 @@ const ProductsPage = () => {
                     key={product.id}
                     className="hover:bg-gray-50 transition-colors"
                   >
-                    <td className="px-6 py-4 text-text font-medium">
+                    <td className="px-6 py-4 text-text font-bold text-lg">
                       {product.name}
                     </td>
-                    <td className="px-6 py-4 text-text">{product.category}</td>
-                    <td className="px-6 py-4 text-text">
+                    <td className="px-6 py-4 text-text text-lg">
+                      {product.category}
+                    </td>
+                    <td className="px-6 py-4 text-lg font-semibold">
                       <MoneyValue amount={product.sellingPrice} size={12} />
                     </td>
-                    <td className="px-6 py-4 text-text">
+                    <td className="px-6 py-4 text-lg font-semibold">
                       <MoneyValue amount={product.costPrice} size={12} />
                     </td>
                     <td className="px-6 py-4">

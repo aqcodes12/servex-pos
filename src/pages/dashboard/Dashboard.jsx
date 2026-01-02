@@ -13,71 +13,78 @@ const Dashboard = () => {
   const cards = [
     {
       title: "Total Sales Today",
-      value: <MoneyValue amount={stats.totalSales} size={20} />,
+      value: <MoneyValue amount={stats.totalSales} size={26} />,
       icon: DollarSign,
-      color: "bg-secondary",
-      textColor: "text-secondary",
+      bg: "bg-teal-50",
+      iconColor: "text-teal-600",
     },
     {
       title: "Total Orders Today",
       value: stats.totalOrders,
       icon: ShoppingCart,
-      color: "bg-accent",
-      textColor: "text-accent",
+      bg: "bg-orange-50",
+      iconColor: "text-orange-600",
     },
     {
-      title: "Total Items Sold Today",
+      title: "Items Sold Today",
       value: stats.itemsSold,
       icon: Package,
-      color: "bg-blue-500",
-      textColor: "text-blue-500",
+      bg: "bg-blue-50",
+      iconColor: "text-blue-600",
     },
     {
       title: "Profit Today",
-      value: <MoneyValue amount={stats.profit} size={20} />,
+      value: <MoneyValue amount={stats.profit} size={26} />,
       icon: TrendingUp,
-      color: "bg-green-500",
-      textColor: "text-green-500",
+      bg: "bg-emerald-50",
+      iconColor: "text-emerald-600",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-primary mb-2">
-            Analytics Dashboard
-          </h1>
-          <p className="text-text opacity-70">
-            Track your daily performance metrics
-          </p>
-        </div>
+    <div className="h-[85vh] p-4 sm:p-6">
+      {/* Header */}
+      <div className="mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">
+          Analytics Dashboard
+        </h1>
+        <p className="text-slate-500 mt-1">Today’s performance overview</p>
+      </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-          {cards.map((card, index) => {
-            const Icon = card.icon;
-            return (
+      {/* Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {cards.map((card, index) => {
+          const Icon = card.icon;
+          return (
+            <div
+              key={index}
+              className="
+                bg-white
+                rounded-2xl
+                border border-slate-200
+                p-6
+                flex flex-col gap-4
+              "
+            >
+              {/* Icon */}
               <div
-                key={index}
-                className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 p-6 border border-gray-100"
+                className={`w-12 h-12 flex items-center justify-center rounded-xl ${card.bg}`}
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`${card.color} bg-opacity-10 p-3 rounded-lg`}>
-                    <Icon className={`w-6 h-6 ${card.textColor}`} />
-                  </div>
-                </div>
-                <div>
-                  <p className="text-sm text-text opacity-60 mb-1 font-medium">
-                    {card.title}
-                  </p>
-                  <p className="text-2xl lg:text-3xl font-bold text-primary">
-                    {card.value}
-                  </p>
+                <Icon className={`w-6 h-6 ${card.iconColor}`} />
+              </div>
+
+              {/* Content */}
+              <div>
+                <p className="text-sm text-slate-500 font-medium mb-1">
+                  {card.title}
+                </p>
+                <div className="text-3xl font-bold text-slate-800">
+                  {card.value}
                 </div>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
