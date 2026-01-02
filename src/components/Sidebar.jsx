@@ -12,14 +12,14 @@ import {
   User,
   LogOut,
 } from "lucide-react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import BrandLogo from "../assets/favicon.png";
 import Footer from "./Footer";
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [activeItem, setActiveItem] = useState("POS");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const mainMenuItems = [
@@ -28,13 +28,23 @@ const Sidebar = () => {
     { name: "Products", icon: ShoppingBag, path: "/products" },
     { name: "Sales", icon: BarChart3, path: "/sales" },
     { name: "Settings", icon: Settings, path: "/settings" },
-    { name: "Logout", icon: LogOut, path: "/login" },
   ];
 
+  const activeItem =
+    mainMenuItems.find((item) =>
+      location.pathname === "/"
+        ? item.path === "/"
+        : location.pathname.startsWith(item.path)
+    )?.name || "POS";
+
   const handleMenuClick = (item) => {
-    setActiveItem(item.name);
     setIsSidebarOpen(false);
     navigate(item.path);
+  };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login", { replace: true });
   };
 
   return (
@@ -73,7 +83,7 @@ const Sidebar = () => {
           <nav className="space-y-1">
             {mainMenuItems.map((item) => {
               const Icon = item.icon;
-              const isActive = activeItem === item.name;
+              const isActive = location.pathname === item.path;
 
               return (
                 <button
@@ -94,6 +104,13 @@ const Sidebar = () => {
                 </button>
               );
             })}
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-4 py-2 rounded-sm text-red-600 hover:bg-red-50 transition-colors"
+            >
+              <LogOut className="w-6 h-6" />
+              <span className="text-base font-medium">Logout</span>
+            </button>
           </nav>
         </div>
       </aside>
