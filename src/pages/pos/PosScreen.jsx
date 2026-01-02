@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { products } from "./products";
+import MoneyValue from "../../components/MoneyValue";
 
 const PosScreen = () => {
   const [activeCategory, setActiveCategory] = useState(products[0].category);
@@ -89,7 +90,9 @@ const PosScreen = () => {
                 className="bg-white rounded-xl shadow-sm p-4 text-center active:scale-95"
               >
                 <p className="font-medium">{item.name}</p>
-                <p className="text-sm text-slate-500">₹{item.price}</p>
+                <p className="text-sm text-slate-500">
+                  <MoneyValue amount={item.price} size={12} />
+                </p>
               </button>
             ))}
           </div>
