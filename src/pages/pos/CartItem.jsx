@@ -11,7 +11,7 @@ const CartItem = ({ item, changeQty, removeItem }) => {
       </p>
 
       {/* Price */}
-      <p className="text-base text-slate-500 mt-1">
+      <p className="text-base text-slate-500 mt-1 flex justify-start items-center gap-1">
         <MoneyValue amount={item.price} size={16} /> × {item.qty}
       </p>
 
