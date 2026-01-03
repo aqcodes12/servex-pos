@@ -32,7 +32,7 @@ const Sidebar = () => {
       path: "/dashboard",
       roles: ["admin"],
     },
-    { name: "POS", icon: Coffee, path: "/", roles: ["admin", "cashier"] },
+    { name: "POS", icon: Coffee, path: "/pos", roles: ["admin", "cashier"] },
     {
       name: "Products",
       icon: ShoppingBag,

@@ -26,7 +26,7 @@ function App() {
           {/* Admin Only */}
           <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
             <Route element={<Sidebar />}>
-              <Route path="/" element={<PosScreen />} />
+              <Route path="/pos" element={<PosScreen />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/products" element={<ProductsPage />} />
               <Route path="/sales" element={<SalesPage />} />

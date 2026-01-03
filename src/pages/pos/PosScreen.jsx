@@ -228,30 +228,32 @@ const PosScreen = () => {
   return (
     <>
       <div className={`${role === "cashier" ? "h-[90vh]" : "h-[85vh]"} p-4`}>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 bg-white rounded-xl shadow-sm border border-slate-200">
-          {/* Left: Title & User */}
-          <div>
-            <h1 className="text-xl sm:text-2xl font-semibold text-slate-900">
-              POS
-            </h1>
-            <p className="text-sm text-slate-500">
-              Logged in as{" "}
-              <span className="font-medium text-slate-700">
-                {JSON.parse(localStorage.getItem("pos_user"))?.name}
-              </span>
-            </p>
-          </div>
+        {role === "cashier" && (
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 bg-white rounded-xl shadow-sm border border-slate-200">
+            {/* Left: Title & User */}
+            <div>
+              <h1 className="text-xl sm:text-2xl font-semibold text-slate-900">
+                POS
+              </h1>
+              <p className="text-sm text-slate-500">
+                Logged in as{" "}
+                <span className="font-medium text-slate-700">
+                  {JSON.parse(localStorage.getItem("pos_user"))?.name}
+                </span>
+              </p>
+            </div>
 
-          {/* Right: Logout */}
-          <button
-            onClick={() => setShowLogoutConfirm(true)}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium
+            {/* Right: Logout */}
+            <button
+              onClick={() => setShowLogoutConfirm(true)}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium
                text-white bg-red-500 hover:bg-red-600
                rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-400"
-          >
-            Logout
-          </button>
-        </div>
+            >
+              Logout
+            </button>
+          </div>
+        )}
 
         <div className="h-full flex flex-col border-2 border-slate-200 rounded-3xl bg-white overflow-hidden">
           {/* MAIN */}

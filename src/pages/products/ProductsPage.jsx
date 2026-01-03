@@ -3,6 +3,7 @@ import { Edit2, Trash2, Plus, X, Search } from "lucide-react";
 import MoneyValue from "../../components/MoneyValue";
 
 const ProductsPage = () => {
+  const [activeCategory, setActiveCategory] = useState("All");
   const [products, setProducts] = useState([
     {
       id: 1,
@@ -122,11 +123,23 @@ const ProductsPage = () => {
     setShowModal(false);
   };
 
-  const filteredProducts = products.filter(
-    (p) =>
+  // const filteredProducts = products.filter(
+  //   (p) =>
+  //     p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     p.category.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
+  const categories = ["All", ...new Set(products.map((p) => p.category))];
+
+  const filteredProducts = products.filter((p) => {
+    const matchesSearch =
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      p.category.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesCategory =
+      activeCategory === "All" || p.category === activeCategory;
+
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8">
@@ -147,6 +160,26 @@ const ProductsPage = () => {
           </button>
         </div>
 
+        <div className="px-4 pt-4 border-b border-gray-100 bg-white rounded-2xl">
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setActiveCategory(category)}
+                className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all
+          ${
+            activeCategory === category
+              ? "bg-secondary text-white shadow-sm"
+              : "bg-gray-100 text-text hover:bg-gray-200"
+          }
+        `}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-4 border-b border-gray-100">
             <div className="relative">
@@ -155,7 +188,10 @@ const ProductsPage = () => {
                 type="text"
                 placeholder="Search products..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setActiveCategory("All");
+                }}
                 className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
               />
             </div>
