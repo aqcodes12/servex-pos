@@ -13,7 +13,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import BrandLogo from "../assets/favicon.png";
+import BrandLogo from "../assets/logo.png";
 import Footer from "./Footer";
 
 const Sidebar = () => {
@@ -89,7 +89,11 @@ const Sidebar = () => {
         >
           {/* Logo Section */}
           <div className="px-6 py-8 flex items-center justify-center gap-3">
-            <img src={BrandLogo} alt="Daily Cup" className="w-28 h-28" />
+            <img
+              src={BrandLogo}
+              alt="Daily Cup"
+              className="h-28 w-auto object-contain"
+            />
           </div>
 
           {/* Main Menu */}
