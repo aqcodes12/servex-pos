@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import BrandLogo from "../../assets/favicon.png";
+import BrandLogo from "../../assets/full.png";
 import { Eye, EyeOff, Layout } from "lucide-react";
 
 const USERS = [
@@ -66,7 +66,11 @@ const LoginPage = () => {
       {/* Left Side */}
       <div className="hidden md:flex md:w-1/2 bg-emerald-50 items-center justify-center">
         <div className="text-center p-8">
-          <img src={BrandLogo} alt="Logo" className="h-28 w-28 mx-auto mb-6" />
+          <img
+            src={BrandLogo}
+            alt="Logo"
+            className="h-12 w-auto object-contain mx-auto mb-6"
+          />
           <h1 className="text-3xl font-bold text-primary">
             Welcome to Servex POS
           </h1>
