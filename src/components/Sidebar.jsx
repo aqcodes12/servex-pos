@@ -307,7 +307,7 @@ const Sidebar = () => {
         {/* Sidebar */}
         <aside
           className={`
-            fixed top-0 left-0 z-40 h-screen bg-bgColor
+            fixed bg-white top-0 left-0 z-40 h-screen bg-bgColor
             transition-all duration-300 ease-in-out
             ${isSidebarCollapsed ? "w-20" : "w-64"}
             ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
@@ -399,7 +399,7 @@ const Sidebar = () => {
             <div className="flex-grow">
               <Outlet />
             </div>
-            <Footer />
+            {role === "cashier" && <Footer />}
           </div>
         </div>
       </div>

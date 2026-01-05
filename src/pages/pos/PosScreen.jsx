@@ -227,7 +227,8 @@ const PosScreen = () => {
   };
   return (
     <>
-      <div className={`${role === "cashier" ? "h-[90vh]" : "h-[85vh]"} p-4`}>
+      {/* <div className={`${role === "cashier" ? "h-[90vh]" : "h-[85vh]"}`}> */}
+      <div className={`h-[90vh] ${role === "cashier" ? "p-5" : "p-0"}`}>
         {role === "cashier" && (
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 bg-white rounded-xl shadow-sm border border-slate-200">
             {/* Left: Title & User */}
@@ -309,7 +310,7 @@ const PosScreen = () => {
 
               {/* Products Grid (Scrollable) */}
               <div className="flex-1 overflow-y-auto p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {filteredItems.map((item) => (
                     <ProductCard
                       key={item.name}
