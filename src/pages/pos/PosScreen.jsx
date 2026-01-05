@@ -170,6 +170,8 @@ import ProductCard from "./ProductCard";
 import CartItem from "./CartItem";
 import BottomBar from "./BottomBar";
 import { useNavigate } from "react-router-dom";
+import BrandLogo from "../../assets/single.png";
+import { LogOut } from "lucide-react";
 
 const PosScreen = () => {
   const navigate = useNavigate();
@@ -230,30 +232,54 @@ const PosScreen = () => {
       {/* <div className={`${role === "cashier" ? "h-[90vh]" : "h-[85vh]"}`}> */}
       <div className={`h-[90vh] ${role === "cashier" ? "p-5" : "p-0"}`}>
         {role === "cashier" && (
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 bg-white rounded-xl shadow-sm border border-slate-200">
-            {/* Left: Title & User */}
-            <div>
-              <h1 className="text-xl sm:text-2xl font-semibold text-slate-900">
-                POS
-              </h1>
-              <p className="text-sm text-slate-500">
-                Logged in as{" "}
-                <span className="font-medium text-slate-700">
-                  {JSON.parse(localStorage.getItem("pos_user"))?.name}
-                </span>
-              </p>
-            </div>
+          <header className="">
+            <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center justify-between h-16 sm:h-20">
+                {/* Left: Logo & Title */}
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12  rounded-xl flex items-center justify-center">
+                    <span className=" font-bold text-lg sm:text-xl">
+                      <img src={BrandLogo} alt="" />
+                    </span>
+                  </div>
+                  <div className="flex flex-col">
+                    <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
+                      POS
+                    </h1>
+                    <p className="hidden sm:block text-xs text-slate-500">
+                      Logged in as{" "}
+                      <span className="font-medium text-slate-700">
+                        {JSON.parse(localStorage.getItem("pos_user"))?.name}
+                      </span>
+                    </p>
+                  </div>
+                </div>
 
-            {/* Right: Logout */}
-            <button
-              onClick={() => setShowLogoutConfirm(true)}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium
-               text-white bg-red-500 hover:bg-red-600
-               rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-400"
-            >
-              Logout
-            </button>
-          </div>
+                {/* Right: User Info & Logout */}
+                <div className="flex items-center gap-3 sm:gap-4">
+                  {/* Mobile user indicator */}
+                  <div className="sm:hidden flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-slate-600 text-sm font-medium">
+                    {JSON.parse(localStorage.getItem("pos_user"))?.name?.charAt(
+                      0
+                    )}
+                  </div>
+
+                  {/* Logout Button */}
+                  <button
+                    onClick={() => setShowLogoutConfirm(true)}
+                    className="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 
+                text-sm font-medium text-red-600 hover:text-white
+                bg-red-50 hover:bg-red-500 
+                rounded-lg transition-all duration-200 
+                focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span className="hidden sm:inline">Logout</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </header>
         )}
 
         <div className="h-full flex flex-col border-2 border-slate-200 rounded-3xl bg-white overflow-hidden">
