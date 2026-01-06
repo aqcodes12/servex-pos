@@ -317,7 +317,7 @@ const PosScreen = () => {
                       }}
                       className={`
                       px-6 py-3
-                      text-lg font-semibold
+                      text-lg font-bold
                       rounded-full
                       whitespace-nowrap
                       active:scale-95
