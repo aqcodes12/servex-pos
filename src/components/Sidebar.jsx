@@ -73,6 +73,8 @@ const Sidebar = () => {
   useEffect(() => {
     if (location.pathname.startsWith("/pos")) {
       setIsSidebarCollapsed(true);
+    } else {
+      setIsSidebarCollapsed(false);
     }
   }, [location.pathname]);
 
