@@ -170,7 +170,7 @@ import ProductCard from "./ProductCard";
 import CartItem from "./CartItem";
 import BottomBar from "./BottomBar";
 import { useNavigate } from "react-router-dom";
-import BrandLogo from "../../assets/single.png";
+import BrandLogo from "../../assets/slogo.png";
 import { LogOut } from "lucide-react";
 
 const PosScreen = () => {

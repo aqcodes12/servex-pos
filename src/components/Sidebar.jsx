@@ -11,7 +11,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import BrandLogo from "../assets/full.png";
+import BrandLogo from "../assets/flogo.png";
 import Footer from "./Footer";
 
 const Sidebar = () => {

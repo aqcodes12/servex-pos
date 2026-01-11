@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import BrandLogo from "../../assets/full.png";
+import BrandLogo from "../../assets/flogo.png";
 import { Eye, EyeOff, Layout } from "lucide-react";
 
 const USERS = [
@@ -72,7 +72,7 @@ const LoginPage = () => {
             className="h-12 w-auto object-contain mx-auto mb-6"
           />
           <h1 className="text-3xl font-bold text-primary">
-            Welcome to Servex POS
+            Welcome to Dineics
           </h1>
           <p className="text-gray-600 mt-3 text-sm">
             Log in to manage your orders, inventory, and sales.
