@@ -3,11 +3,17 @@ name: Keep Render Backend Alive
 on:
   schedule:
     - cron: "*/5 * * * *" # every 5 minutes
-  workflow_dispatch:
+  workflow_dispatch: # manual run button
+  push: # (TEMP) run on push so you can test easily
+    branches:
+      - main
 
 jobs:
   ping:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Ping backend health endpoint
-        run: curl -s https://dineics.onrender.com/health > /dev/null
+      - name: Ping Render Health Endpoint
+        run: |
+          echo "Pinging backend..."
+          curl -L -s -o /dev/null -w "HTTP_STATUS:%{http_code}\nTIME:%{time_total}s\n" https://dineics.onrender.com/health

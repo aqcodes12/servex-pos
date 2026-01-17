@@ -1,1 +1,1 @@
-export const BASE_URL = "https://beebuy.in:3000/api";
+export const BASE_URL = "https://dineics.onrender.com/api";
