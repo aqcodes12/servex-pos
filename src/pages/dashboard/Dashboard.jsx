@@ -1,14 +1,59 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { TrendingUp, ShoppingCart, Package, DollarSign } from "lucide-react";
 import MoneyValue from "../../components/MoneyValue";
 
 const Dashboard = () => {
-  const [stats] = useState({
-    totalSales: 12847.5,
-    totalOrders: 156,
-    itemsSold: 342,
-    profit: 4523.8,
+  const token = localStorage.getItem("token");
+
+  const [stats, setStats] = useState({
+    totalSales: 0,
+    totalOrders: 0,
+    itemsSold: 0,
+    profit: 0,
   });
+
+  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState("");
+
+  const fetchTodayDashboard = async () => {
+    try {
+      setLoading(true);
+      setApiError("");
+
+      if (!token) {
+        setApiError("Token not found. Please login again.");
+        return;
+      }
+
+      const res = await axios.get("/order/dashboard/today", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = res.data?.data;
+
+      setStats({
+        totalSales: data?.totalSales ?? 0,
+        totalOrders: data?.totalOrders ?? 0,
+        itemsSold: data?.totalItemsSold ?? 0,
+        profit: data?.totalProfit ?? 0,
+      });
+    } catch (err) {
+      setApiError(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Failed to load dashboard",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTodayDashboard();
+  }, []);
 
   const cards = [
     {
@@ -44,48 +89,64 @@ const Dashboard = () => {
   return (
     <div className="h-[85vh] p-4 sm:p-6">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">
-          Analytics Dashboard
-        </h1>
-        <p className="text-slate-500 mt-1">Today’s performance overview</p>
+      <div className="mb-6 flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">
+            Analytics Dashboard
+          </h1>
+          <p className="text-slate-500 mt-1">Today’s performance overview</p>
+        </div>
+
+        <button
+          onClick={fetchTodayDashboard}
+          className="px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-sm font-medium"
+        >
+          Refresh
+        </button>
       </div>
 
-      {/* Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {cards.map((card, index) => {
-          const Icon = card.icon;
-          return (
-            <div
-              key={index}
-              className="
-                bg-white
-                rounded-2xl
-                border border-slate-200
-                p-6
-                flex flex-col gap-4
-              "
-            >
-              {/* Icon */}
-              <div
-                className={`w-12 h-12 flex items-center justify-center rounded-xl ${card.bg}`}
-              >
-                <Icon className={`w-6 h-6 ${card.iconColor}`} />
-              </div>
+      {/* Error */}
+      {apiError && (
+        <div className="mb-4 bg-red-50 text-red-600 border border-red-200 px-4 py-3 rounded-xl">
+          {apiError}
+        </div>
+      )}
 
-              {/* Content */}
-              <div>
-                <p className="text-sm text-slate-500 font-medium mb-1">
-                  {card.title}
-                </p>
-                <div className="text-3xl font-bold text-slate-800">
-                  {card.value}
+      {/* Loading */}
+      {loading ? (
+        <div className="text-center text-slate-500 py-12 text-lg">
+          Loading dashboard...
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {cards.map((card, index) => {
+            const Icon = card.icon;
+            return (
+              <div
+                key={index}
+                className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col gap-4"
+              >
+                {/* Icon */}
+                <div
+                  className={`w-12 h-12 flex items-center justify-center rounded-xl ${card.bg}`}
+                >
+                  <Icon className={`w-6 h-6 ${card.iconColor}`} />
+                </div>
+
+                {/* Content */}
+                <div>
+                  <p className="text-sm text-slate-500 font-medium mb-1">
+                    {card.title}
+                  </p>
+                  <div className="text-3xl font-bold text-slate-800">
+                    {card.value}
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
