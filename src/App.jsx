@@ -18,13 +18,13 @@ function App() {
 
           {/* POS (Admin + Cashier) */}
           <Route
-            element={<ProtectedRoute allowedRoles={["admin", "cashier"]} />}
+            element={<ProtectedRoute allowedRoles={["ADMIN", "cashier"]} />}
           >
             <Route path="/" element={<PosScreen />} />
           </Route>
 
           {/* Admin Only */}
-          <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+          <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
             <Route element={<Sidebar />}>
               <Route path="/pos" element={<PosScreen />} />
               <Route path="/dashboard" element={<Dashboard />} />

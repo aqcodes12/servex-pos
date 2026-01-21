@@ -30,31 +30,31 @@ const Sidebar = () => {
       name: "Dashboard",
       icon: LayoutDashboard,
       path: "/dashboard",
-      roles: ["admin"],
+      roles: ["ADMIN"],
     },
     {
       name: "POS",
       icon: Coffee,
       path: "/pos",
-      roles: ["admin", "cashier"],
+      roles: ["ADMIN", "cashier"],
     },
     {
       name: "Products",
       icon: ShoppingBag,
       path: "/products",
-      roles: ["admin"],
+      roles: ["ADMIN"],
     },
     {
       name: "Sales",
       icon: BarChart3,
       path: "/sales",
-      roles: ["admin"],
+      roles: ["ADMIN"],
     },
     {
       name: "Settings",
       icon: Settings,
       path: "/settings",
-      roles: ["admin"],
+      roles: ["ADMIN"],
     },
   ];
 
