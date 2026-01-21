@@ -30,7 +30,7 @@ const PosScreen = () => {
   const [apiError, setApiError] = useState("");
 
   // ✅ Payment + Tax (for create order)
-  const [selectedPaymentMode, setSelectedPaymentMode] = useState("UPI"); // default UPI
+  const [selectedPaymentMode, setSelectedPaymentMode] = useState(""); // default UPI
 
   const [taxType] = useState("GST");
   const [taxRate] = useState(5);
