@@ -2,7 +2,7 @@ import React from "react";
 import MoneyValue from "../../components/MoneyValue";
 
 const ProductCard = ({ pro, onClick, className = "" }) => {
-  const { name, price } = pro;
+  const { name, sellingPrice } = pro;
 
   return (
     <button
@@ -27,7 +27,7 @@ const ProductCard = ({ pro, onClick, className = "" }) => {
       {/* Price */}
       <div className="mt-2">
         <MoneyValue
-          amount={price}
+          amount={sellingPrice}
           size={18}
           textClassName="text-slate-800 font-bold"
         />

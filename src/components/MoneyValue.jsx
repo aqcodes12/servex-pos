@@ -1,16 +1,18 @@
 import CurrencyIcon from "./CurrencyIcon";
 
 const MoneyValue = ({
-  amount,
+  amount = 0,
   size = 14,
   iconClassName = "",
   textClassName = "",
 }) => {
+  const safeAmount = Number(amount ?? 0);
+
   return (
-    <span className={`inline-flex items-center gap-1`}>
+    <span className="inline-flex items-center gap-1">
       <CurrencyIcon size={size} className={iconClassName} />
       <span className={`${textClassName} font-bold text-xl`}>
-        {amount.toLocaleString("en-IN", {
+        {safeAmount.toLocaleString("en-IN", {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })}

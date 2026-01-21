@@ -1,170 +1,5 @@
-// import React, { useState } from "react";
-// import { products } from "./products";
-// import MoneyValue from "../../components/MoneyValue";
-// import ProductCard from "./ProductCard";
-// import { Trash2 } from "lucide-react";
-// import CartItem from "./CartItem";
-// import BottomBar from "./BottomBar";
-
-// const PosScreen = () => {
-//   const [activeCategory, setActiveCategory] = useState(products[0].category);
-//   const [search, setSearch] = useState("");
-//   const [cart, setCart] = useState([]);
-
-//   /* ------------------ DATA ------------------ */
-//   const currentCategory = products.find(
-//     (cat) => cat.category === activeCategory
-//   );
-
-//   const filteredItems = currentCategory.items.filter((item) =>
-//     item.name.toLowerCase().includes(search.toLowerCase())
-//   );
-
-//   const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-
-//   const canPay = cart.length > 0;
-
-//   /* ------------------ CART ACTIONS ------------------ */
-//   const updateCart = (updater) => {
-//     setCart((prev) => updater(prev));
-//   };
-
-//   const addToCart = (product) => {
-//     updateCart((cart) => {
-//       const item = cart.find((i) => i.name === product.name);
-//       return item
-//         ? cart.map((i) =>
-//             i.name === product.name ? { ...i, qty: i.qty + 1 } : i
-//           )
-//         : [...cart, { ...product, qty: 1 }];
-//     });
-//   };
-
-//   const changeQty = (name, delta) => {
-//     updateCart((cart) =>
-//       cart
-//         .map((i) => (i.name === name ? { ...i, qty: i.qty + delta } : i))
-//         .filter((i) => i.qty > 0)
-//     );
-//   };
-
-//   const removeItem = (name) => {
-//     updateCart((cart) => cart.filter((i) => i.name !== name));
-//   };
-
-//   const clearBill = () => setCart([]);
-
-//   /* ------------------ UI ------------------ */
-//   return (
-//     <div className="">
-//       <div className="h-[85vh] flex flex-col border-2 border-gray-200 p-5 rounded-3xl">
-//         <div className="flex flex-1 overflow-hidden">
-//           {/* LEFT: PRODUCTS */}
-//           <div className="flex-1 p-3 flex flex-col overflow-hidden">
-//             {/* Search */}
-
-//             <input
-//               type="text"
-//               placeholder="Search products..."
-//               value={search}
-//               onChange={(e) => setSearch(e.target.value)}
-//               className="
-//     w-full mb-4
-//     px-5 py-3
-//     text-lg
-//     rounded-xl
-//     border border-slate-300
-//     bg-white
-//     focus:outline-none
-//     focus:ring-2 focus:ring-teal-500
-//   "
-//             />
-
-//             {/* Categories */}
-//             <div className="flex gap-2 overflow-x-auto mb-3">
-//               {products.map((cat) => (
-//                 <button
-//                   key={cat.category}
-//                   onClick={() => {
-//                     setActiveCategory(cat.category);
-//                     setSearch("");
-//                   }}
-//                   className={`
-//     px-6 py-3
-//     text-lg font-semibold
-//     rounded-full
-//     whitespace-nowrap
-//     transition-all
-//     active:scale-95
-//     ${
-//       activeCategory === cat.category
-//         ? "bg-teal-500 text-white shadow"
-//         : "bg-white border border-slate-300 text-slate-700"
-//     }
-//   `}
-//                 >
-//                   {cat.category}
-//                 </button>
-//               ))}
-//             </div>
-
-//             {/* Products */}
-//             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3  p-5">
-//               {filteredItems.map((item) => (
-//                 <ProductCard
-//                   key={item.name}
-//                   pro={item}
-//                   onClick={() => addToCart(item)}
-//                 />
-//               ))}
-//             </div>
-//           </div>
-
-//           {/* RIGHT: CART */}
-//           <div className="w-[350px] hidden md:flex flex-col border-l-2 border-gray-200 ">
-//             <div className="p-4 border-b-2 border-gray-200">
-//               <h2 className="text-lg font-semibold">Current Bill</h2>
-//             </div>
-
-//             <div className="flex-1 overflow-y-auto p-4 space-y-3">
-//               {cart.length === 0 && (
-//                 <p className="text-center text-slate-400">No items added</p>
-//               )}
-
-//               {cart.map((item) => (
-//                 <CartItem
-//                   key={item.name}
-//                   item={item}
-//                   changeQty={changeQty}
-//                   removeItem={removeItem}
-//                 />
-//               ))}
-//             </div>
-
-//             {/* Total */}
-//             <div className="p-4 border-t-2 border-gray-200 pt-2">
-//               <div className="flex justify-between font-semibold text-lg">
-//                 <span>Total</span>
-//                 <span>
-//                   <MoneyValue amount={total} size={14} />
-//                 </span>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* BOTTOM BAR */}
-
-//         <BottomBar total={total} canPay={canPay} clearBill={clearBill} />
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default PosScreen;
-
-import React, { useState } from "react";
-import { products } from "./products";
+import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
 import MoneyValue from "../../components/MoneyValue";
 import ProductCard from "./ProductCard";
 import CartItem from "./CartItem";
@@ -175,34 +10,171 @@ import { LogOut } from "lucide-react";
 
 const PosScreen = () => {
   const navigate = useNavigate();
-  const role = JSON.parse(localStorage.getItem("pos_user")).role;
-  console.log(role);
-  const [activeCategory, setActiveCategory] = useState(products[0].category);
+
+  const posUser = JSON.parse(localStorage.getItem("pos_user"));
+  const role = posUser?.role;
+
+  const token = localStorage.getItem("token");
+
+  const [activeCategory, setActiveCategory] = useState("All");
   const [search, setSearch] = useState("");
   const [cart, setCart] = useState([]);
+
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  /* ------------------ DATA ------------------ */
-  const currentCategory = products.find(
-    (cat) => cat.category === activeCategory
-  );
 
-  const filteredItems = currentCategory.items.filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase())
-  );
+  // ✅ API States
+  const [categories, setCategories] = useState(["All"]);
+  const [products, setProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [loadingCategories, setLoadingCategories] = useState(false);
+  const [apiError, setApiError] = useState("");
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+  // ✅ Payment + Tax (for create order)
+  const [selectedPaymentMode, setSelectedPaymentMode] = useState("UPI"); // default UPI
+
+  const [taxType] = useState("GST");
+  const [taxRate] = useState(5);
+
+  const total = cart.reduce(
+    (sum, item) => sum + item.sellingPrice * item.qty,
+    0,
+  );
   const canPay = cart.length > 0;
 
-  /* ------------------ CART ACTIONS ------------------ */
+  // ------------------ API CALLS ------------------
+
+  const fetchCategories = async () => {
+    try {
+      setLoadingCategories(true);
+      setApiError("");
+
+      const res = await axios.get("/product/categories", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const apiCategories = res.data?.data || [];
+      setCategories(["All", ...apiCategories]);
+
+      // ✅ Default to first category if "All"
+      if (apiCategories.length > 0 && activeCategory === "All") {
+        setActiveCategory(apiCategories[0]);
+      }
+    } catch (err) {
+      setApiError(err?.response?.data?.message || "Failed to load categories");
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
+
+  const fetchProducts = async ({ searchText = "", category = "" }) => {
+    try {
+      setLoadingProducts(true);
+      setApiError("");
+
+      const res = await axios.get("/product/get-products", {
+        headers: { Authorization: `Bearer ${token}` },
+        params: {
+          ...(searchText ? { search: searchText } : {}),
+          ...(category && category !== "All" ? { category } : {}),
+          isActive: true,
+        },
+      });
+
+      const apiProducts = res.data?.data || [];
+
+      // ✅ Map backend -> UI product model
+      const mapped = apiProducts.map((p) => ({
+        id: p._id,
+        name: p.name,
+        category: p.category,
+        sellingPrice: p.sellingPrice,
+        costPrice: p.costPrice,
+        isActive: p.isActive,
+      }));
+
+      setProducts(mapped);
+    } catch (err) {
+      setApiError(err?.response?.data?.message || "Failed to load products");
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
+
+  // ✅ create order
+  const createOrder = async () => {
+    try {
+      setApiError("");
+
+      if (!token) {
+        setApiError("Token missing. Please login again.");
+        return;
+      }
+
+      if (cart.length === 0) {
+        setApiError("Cart is empty.");
+        return;
+      }
+
+      const payload = {
+        items: cart.map((i) => ({
+          productId: i.id,
+          quantity: i.qty,
+        })),
+        paymentMode: selectedPaymentMode,
+        taxType, // "GST"
+        taxRate, // 5
+      };
+
+      const res = await axios.post("/order/create-order", payload, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // ✅ order created successfully
+      const order = res.data?.data;
+      console.log("ORDER CREATED:", order);
+
+      // ✅ clear cart after payment
+      setCart([]);
+
+      alert("Order created successfully!");
+    } catch (err) {
+      setApiError(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Failed to create order",
+      );
+    }
+  };
+
+  // ------------------ LIFE CYCLE ------------------
+
+  useEffect(() => {
+    if (!token) {
+      setApiError("Token missing. Please login again.");
+      return;
+    }
+
+    fetchCategories();
+  }, []);
+
+  // ✅ fetch products whenever category or search changes
+  useEffect(() => {
+    if (!token) return;
+    fetchProducts({ searchText: search, category: activeCategory });
+  }, [activeCategory, search]);
+
+  // ------------------ CART ACTIONS ------------------
+
   const updateCart = (updater) => setCart((prev) => updater(prev));
 
   const addToCart = (product) => {
     updateCart((cart) => {
-      const item = cart.find((i) => i.name === product.name);
+      const item = cart.find((i) => i.id === product.id);
       return item
-        ? cart.map((i) =>
-            i.name === product.name ? { ...i, qty: i.qty + 1 } : i
-          )
+        ? cart.map((i) => (i.id === product.id ? { ...i, qty: i.qty + 1 } : i))
         : [...cart, { ...product, qty: 1 }];
     });
   };
@@ -211,7 +183,7 @@ const PosScreen = () => {
     updateCart((cart) =>
       cart
         .map((i) => (i.name === name ? { ...i, qty: i.qty + delta } : i))
-        .filter((i) => i.qty > 0)
+        .filter((i) => i.qty > 0),
     );
   };
 
@@ -221,24 +193,28 @@ const PosScreen = () => {
 
   const clearBill = () => setCart([]);
 
-  /* ------------------ UI ------------------ */
-
   const handleLogout = () => {
     localStorage.clear();
     navigate("/login", { replace: true });
   };
+
+  // ✅ filter only for UI render (api already filters, but still good)
+  const filteredItems = useMemo(() => {
+    return products.filter((p) =>
+      p.name.toLowerCase().includes(search.toLowerCase()),
+    );
+  }, [products, search]);
+
   return (
     <>
-      {/* <div className={`${role === "cashier" ? "h-[90vh]" : "h-[85vh]"}`}> */}
       <div className={`h-[90vh] ${role === "cashier" ? "p-5" : "p-0"}`}>
         {role === "cashier" && (
           <header className="">
             <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between h-16 sm:h-20">
-                {/* Left: Logo & Title */}
                 <div className="flex items-center gap-3 sm:gap-4">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12  rounded-xl flex items-center justify-center">
-                    <span className=" font-bold text-lg sm:text-xl">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center">
+                    <span className="font-bold text-lg sm:text-xl">
                       <img src={BrandLogo} alt="" />
                     </span>
                   </div>
@@ -249,29 +225,20 @@ const PosScreen = () => {
                     <p className="hidden sm:block text-xs text-slate-500">
                       Logged in as{" "}
                       <span className="font-medium text-slate-700">
-                        {JSON.parse(localStorage.getItem("pos_user"))?.name}
+                        {posUser?.name}
                       </span>
                     </p>
                   </div>
                 </div>
 
-                {/* Right: User Info & Logout */}
                 <div className="flex items-center gap-3 sm:gap-4">
-                  {/* Mobile user indicator */}
-                  <div className="sm:hidden flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-slate-600 text-sm font-medium">
-                    {JSON.parse(localStorage.getItem("pos_user"))?.name?.charAt(
-                      0
-                    )}
-                  </div>
-
-                  {/* Logout Button */}
                   <button
                     onClick={() => setShowLogoutConfirm(true)}
-                    className="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 
-                text-sm font-medium text-red-600 hover:text-white
-                bg-red-50 hover:bg-red-500 
-                rounded-lg transition-all duration-200 
-                focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+                    className="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5
+                    text-sm font-medium text-red-600 hover:text-white
+                    bg-red-50 hover:bg-red-500
+                    rounded-lg transition-all duration-200
+                    focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
                   >
                     <LogOut className="w-4 h-4" />
                     <span className="hidden sm:inline">Logout</span>
@@ -283,79 +250,90 @@ const PosScreen = () => {
         )}
 
         <div className="h-full flex flex-col border-2 border-slate-200 rounded-3xl bg-white overflow-hidden">
-          {/* MAIN */}
+          {/* ✅ API ERROR */}
+          {apiError && (
+            <div className="mx-4 mt-4 bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-xl">
+              {apiError}
+            </div>
+          )}
+
           <div className="flex flex-1 overflow-hidden">
-            {/* LEFT: PRODUCTS */}
+            {/* LEFT */}
             <div className="flex-1 flex flex-col overflow-hidden">
-              {/* Search + Categories (Sticky) */}
               <div className="p-4 border-b border-slate-200 bg-white sticky top-0 z-10">
                 {/* Search */}
                 <input
                   type="text"
                   placeholder="Search products..."
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="
-                  w-full mb-4
-                  px-5 py-3
-                  text-lg
-                  rounded-xl
-                  border border-slate-300
-                  focus:outline-none
-                  focus:ring-2 focus:ring-teal-500
-                "
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setSearch(value);
+
+                    if (value.trim().length > 0) {
+                      setActiveCategory("All");
+                    }
+                  }}
+                  className="w-full mb-4 px-5 py-3 text-lg rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
 
                 {/* Categories */}
                 <div className="flex gap-3 overflow-x-auto pb-2">
-                  {products.map((cat) => (
-                    <button
-                      key={cat.category}
-                      onClick={() => {
-                        setActiveCategory(cat.category);
-                        setSearch("");
-                      }}
-                      className={`
-                      px-6 py-3
-                      text-lg font-bold
-                      rounded-full
-                      whitespace-nowrap
-                      active:scale-95
-                      ${
-                        activeCategory === cat.category
-                          ? "bg-teal-500 text-white shadow"
-                          : "bg-white border border-slate-300 text-slate-700"
-                      }
-                    `}
-                    >
-                      {cat.category}
-                    </button>
-                  ))}
+                  {loadingCategories ? (
+                    <div className="text-slate-500">Loading categories...</div>
+                  ) : (
+                    categories.map((cat) => (
+                      <button
+                        key={cat}
+                        onClick={() => {
+                          setActiveCategory(cat);
+                          setSearch("");
+                        }}
+                        className={`px-6 py-3 text-lg font-bold rounded-full whitespace-nowrap active:scale-95 ${
+                          activeCategory === cat
+                            ? "bg-teal-500 text-white shadow"
+                            : "bg-white border border-slate-300 text-slate-700"
+                        }`}
+                      >
+                        {cat}
+                      </button>
+                    ))
+                  )}
                 </div>
               </div>
 
-              {/* Products Grid (Scrollable) */}
+              {/* Products */}
               <div className="flex-1 overflow-y-auto p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {filteredItems.map((item) => (
-                    <ProductCard
-                      key={item.name}
-                      pro={item}
-                      onClick={() => addToCart(item)}
-                    />
-                  ))}
-                </div>
+                {loadingProducts ? (
+                  <div className="text-center text-slate-500 text-lg py-10">
+                    Loading products...
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {filteredItems.map((item) => (
+                      <ProductCard
+                        key={item.id}
+                        pro={item}
+                        onClick={() => addToCart(item)}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {!loadingProducts && filteredItems.length === 0 && (
+                  <div className="text-center text-slate-400 text-lg py-10">
+                    No products found
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* RIGHT: CART */}
+            {/* RIGHT CART */}
             <div className="w-[360px] hidden md:flex flex-col border-l-2 border-slate-200">
-              {/* Header */}
               <div className="p-4 border-b border-slate-200">
                 <h2 className="text-xl font-semibold">Current Bill</h2>
               </div>
 
-              {/* Cart Items */}
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {cart.length === 0 && (
                   <p className="text-center text-slate-400 text-lg">
@@ -374,7 +352,7 @@ const PosScreen = () => {
               </div>
 
               {/* Total */}
-              <div className="p-4 border-t-2 border-slate-200">
+              <div className="p-4 border-t-2 border-slate-200 space-y-3">
                 <div className="flex justify-between text-xl font-bold">
                   <span>Total</span>
                   <MoneyValue amount={total} size={18} />
@@ -383,10 +361,19 @@ const PosScreen = () => {
             </div>
           </div>
 
-          {/* BOTTOM BAR */}
-          <BottomBar total={total} canPay={canPay} clearBill={clearBill} />
+          {/* Bottom Bar */}
+          <BottomBar
+            total={total}
+            canPay={canPay}
+            clearBill={clearBill}
+            selectedPaymentMode={selectedPaymentMode}
+            onSelectPaymentMode={setSelectedPaymentMode}
+            onComplete={createOrder}
+          />
         </div>
       </div>
+
+      {/* Logout confirm */}
       {showLogoutConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-xl shadow-lg w-[90%] max-w-sm p-6">

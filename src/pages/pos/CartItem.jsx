@@ -9,7 +9,7 @@ const CartItem = ({ item, changeQty, removeItem }) => {
         <div>
           <p className="font-medium">{item.name}</p>
           <p className="text-sm text-slate-500">
-            <MoneyValue amount={item.price} size={12} /> × {item.qty}
+            <MoneyValue amount={item.sellingPrice} size={12} /> × {item.qty}
           </p>
         </div>
 
