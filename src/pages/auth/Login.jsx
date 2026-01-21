@@ -175,6 +175,7 @@ const LoginPage = () => {
       // { success:true, data:{ token:"...", role:"ADMIN" } }
       const token = res?.data?.data?.token;
       const role = res?.data?.data?.role;
+      const user = res?.data?.data?.user;
 
       if (!token) {
         setError("Token not received from server.");
@@ -190,6 +191,7 @@ const LoginPage = () => {
         JSON.stringify({
           email: form.email.trim(),
           role,
+          ...user,
         }),
       );
 
