@@ -4,8 +4,6 @@ import { TrendingUp, ShoppingCart, Package, DollarSign } from "lucide-react";
 import MoneyValue from "../../components/MoneyValue";
 
 const Dashboard = () => {
-  const token = localStorage.getItem("token");
-
   const [stats, setStats] = useState({
     totalSales: 0,
     totalOrders: 0,
@@ -20,6 +18,8 @@ const Dashboard = () => {
     try {
       setLoading(true);
       setApiError("");
+
+      const token = localStorage.getItem("token");
 
       if (!token) {
         setApiError("Token not found. Please login again.");

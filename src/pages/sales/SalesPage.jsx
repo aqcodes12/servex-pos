@@ -411,8 +411,12 @@ const SalesPage = () => {
       }
 
       // ✅ when date not selected use current month range (or you can change)
-      const startDate = "2026-01-01";
-      const endDate = dateFilter || "2026-01-21";
+      const today = new Date();
+
+      const startDate = new Date(today.getFullYear(), 0, 1)
+        .toISOString()
+        .split("T")[0]; // Jan 1 of current year
+      const endDate = dateFilter || today.toISOString().split("T")[0]; // today or selected date
 
       const res = await axios.get("/order/get-all-orders", {
         headers: {
