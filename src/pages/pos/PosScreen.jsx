@@ -6,14 +6,17 @@ import CartItem from "./CartItem";
 import BottomBar from "./BottomBar";
 import { useNavigate } from "react-router-dom";
 import BrandLogo from "../../assets/slogo.png";
-import { LogOut } from "lucide-react";
+import { Clock, LogOut } from "lucide-react";
 import LastOrderBar from "./LastOrderBar";
+import RecentOrdersDrawer from "./RecentOrdersDrawer";
 
 const PosScreen = () => {
   const navigate = useNavigate();
 
   const posUser = JSON.parse(localStorage.getItem("pos_user"));
   const role = posUser?.role;
+  const [showRecentOrders, setShowRecentOrders] = useState(false);
+  const [recentOrders, setRecentOrders] = useState([]);
 
   const token = localStorage.getItem("token");
   const [activeCategory, setActiveCategory] = useState("All");
@@ -106,6 +109,9 @@ const PosScreen = () => {
 
       const orders = res.data?.data || [];
       if (!orders.length) return;
+
+      const lastFive = orders.slice(0, 5);
+      setRecentOrders(lastFive);
 
       const latest = orders[0]; // 👈 MOST RECENT
 
@@ -451,6 +457,30 @@ const PosScreen = () => {
           </div>
         </div>
       )}
+
+      <button
+        onClick={() => setShowRecentOrders(true)}
+        className="fixed bottom-6 right-6 z-40
+    w-12 h-12 rounded-full
+    bg-white border border-slate-300
+    shadow-lg hover:bg-slate-100
+    flex items-center justify-center"
+      >
+        <Clock size={20} />
+      </button>
+
+      <RecentOrdersDrawer
+        open={showRecentOrders}
+        onClose={() => setShowRecentOrders(false)}
+        orders={recentOrders}
+        role={role}
+        onReprint={(order) => {
+          console.log("Reprint order:", order);
+        }}
+        onCancel={(order) => {
+          console.log("Cancel order:", order);
+        }}
+      />
     </>
   );
 };
