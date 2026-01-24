@@ -168,7 +168,7 @@ const SettingsPage = () => {
       alert("Admin password updated successfully!");
       setAdminPassword({ current: "", newPassword: "", confirm: "" });
     } catch (err) {
-      setApiError(err?.response?.data?.message || "Failed to update password");
+      setApiError(err?.response?.data?.msg || "Failed to update password");
     }
   };
 
@@ -233,13 +233,6 @@ const SettingsPage = () => {
             Manage your shop and account settings
           </p>
         </div>
-
-        {/* ✅ API ERROR */}
-        {apiError && (
-          <div className="mb-4 bg-red-50 text-red-600 border border-red-200 px-4 py-3 rounded-xl">
-            {apiError}
-          </div>
-        )}
 
         {/* Tabs */}
         <div className="mb-6 border-b border-gray-200">
@@ -566,6 +559,7 @@ const SettingsPage = () => {
                     </button>
                   </div>
                 </div>
+                {apiError && <p className="text-red-500">{apiError}</p>}
 
                 {/* New */}
                 <div>

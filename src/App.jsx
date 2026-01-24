@@ -18,7 +18,7 @@ function App() {
 
           {/* POS (Admin + Cashier) */}
           <Route
-            element={<ProtectedRoute allowedRoles={["ADMIN", "cashier"]} />}
+            element={<ProtectedRoute allowedRoles={["ADMIN", "CASHIER"]} />}
           >
             <Route path="/" element={<PosScreen />} />
           </Route>

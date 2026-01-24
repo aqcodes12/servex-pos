@@ -57,28 +57,28 @@ const Dashboard = () => {
 
   const cards = [
     {
-      title: "Total Sales Today",
+      title: "Total Sales",
       value: <MoneyValue amount={stats.totalSales} size={26} />,
       icon: DollarSign,
       bg: "bg-teal-50",
       iconColor: "text-teal-600",
     },
     {
-      title: "Total Orders Today",
+      title: "Total Orders",
       value: stats.totalOrders,
       icon: ShoppingCart,
       bg: "bg-orange-50",
       iconColor: "text-orange-600",
     },
     {
-      title: "Items Sold Today",
+      title: "Items Sold",
       value: stats.itemsSold,
       icon: Package,
       bg: "bg-blue-50",
       iconColor: "text-blue-600",
     },
     {
-      title: "Profit Today",
+      title: "Profit",
       value: <MoneyValue amount={stats.profit} size={26} />,
       icon: TrendingUp,
       bg: "bg-emerald-50",

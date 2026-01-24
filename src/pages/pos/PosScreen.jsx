@@ -7,6 +7,7 @@ import BottomBar from "./BottomBar";
 import { useNavigate } from "react-router-dom";
 import BrandLogo from "../../assets/slogo.png";
 import { LogOut } from "lucide-react";
+import LastOrderBar from "./LastOrderBar";
 
 const PosScreen = () => {
   const navigate = useNavigate();
@@ -15,15 +16,16 @@ const PosScreen = () => {
   const role = posUser?.role;
 
   const token = localStorage.getItem("token");
-
   const [activeCategory, setActiveCategory] = useState("All");
+  const [categories, setCategories] = useState(["All"]);
+  const [creatingOrder, setCreatingOrder] = useState(false);
   const [search, setSearch] = useState("");
   const [cart, setCart] = useState([]);
+  const [lastOrder, setLastOrder] = useState(null);
 
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   // ✅ API States
-  const [categories, setCategories] = useState(["All"]);
   const [products, setProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [loadingCategories, setLoadingCategories] = useState(false);
@@ -46,21 +48,15 @@ const PosScreen = () => {
   const fetchCategories = async () => {
     try {
       setLoadingCategories(true);
-      setApiError("");
 
       const res = await axios.get("/product/categories", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       const apiCategories = res.data?.data || [];
-      setCategories(["All", ...apiCategories]);
 
-      // ✅ Default to first category if "All"
-      if (apiCategories.length > 0 && activeCategory === "All") {
-        setActiveCategory(apiCategories[0]);
-      }
-    } catch (err) {
-      setApiError(err?.response?.data?.message || "Failed to load categories");
+      // ✅ Inject "All" at UI level
+      setCategories(["All", ...apiCategories]);
     } finally {
       setLoadingCategories(false);
     }
@@ -100,9 +96,39 @@ const PosScreen = () => {
     }
   };
 
+  const fetchLastOrder = async () => {
+    try {
+      const res = await axios.get("/order/recent", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const orders = res.data?.data || [];
+      if (!orders.length) return;
+
+      const latest = orders[0]; // 👈 MOST RECENT
+
+      setLastOrder({
+        orderId: latest._id,
+        invoiceNo: latest.invoiceNumber,
+        totalAmount: latest.amount,
+        status: latest.status,
+        paymentMode: latest.paymentMode,
+        createdAt: latest.createdAt,
+      });
+    } catch (err) {
+      console.error("Failed to fetch last order");
+    }
+  };
+
+  const generateClientOrderId = () => crypto.randomUUID();
+
   // ✅ create order
   const createOrder = async () => {
+    if (creatingOrder) return;
     try {
+      setCreatingOrder(true);
       setApiError("");
 
       if (!token) {
@@ -115,7 +141,15 @@ const PosScreen = () => {
         return;
       }
 
+      if (!selectedPaymentMode) {
+        setApiError("Please select a payment mode.");
+        return;
+      }
+
+      const clientOrderId = generateClientOrderId();
+
       const payload = {
+        clientOrderId,
         items: cart.map((i) => ({
           productId: i.id,
           quantity: i.qty,
@@ -146,6 +180,8 @@ const PosScreen = () => {
           err?.message ||
           "Failed to create order",
       );
+    } finally {
+      setCreatingOrder(false);
     }
   };
 
@@ -158,6 +194,7 @@ const PosScreen = () => {
     }
 
     fetchCategories();
+    fetchLastOrder();
   }, []);
 
   // ✅ fetch products whenever category or search changes
@@ -207,8 +244,8 @@ const PosScreen = () => {
 
   return (
     <>
-      <div className={`h-[90vh] ${role === "cashier" ? "p-5" : "p-0"}`}>
-        {role === "cashier" && (
+      <div className={`h-[90vh] ${role === "CASHIER" ? "p-5" : "p-0"}`}>
+        {role === "CASHIER" && (
           <header className="">
             <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between h-16 sm:h-20">
@@ -369,7 +406,16 @@ const PosScreen = () => {
             selectedPaymentMode={selectedPaymentMode}
             onSelectPaymentMode={setSelectedPaymentMode}
             onComplete={createOrder}
+            loading={creatingOrder}
           />
+          {lastOrder && (
+            <LastOrderBar
+              order={lastOrder}
+              role={role}
+              // onReprint={() => (lastOrder)}
+              // onCancel={() => handleCancelOrder(lastOrder)}
+            />
+          )}
         </div>
       </div>
 

@@ -590,6 +590,9 @@ const SalesPage = () => {
                         Payment Mode
                       </th>
                       <th className="px-6 py-4 text-left text-base font-semibold text-primary">
+                        Status
+                      </th>
+                      <th className="px-6 py-4 text-left text-base font-semibold text-primary">
                         Actions
                       </th>
                     </tr>
@@ -627,6 +630,11 @@ const SalesPage = () => {
                             {sale.paymentMode}
                           </span>
                         </td>
+                        <td className="px-6 py-4">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-base font-medium bg-blue-100 text-blue-700">
+                            {sale.status}
+                          </span>
+                        </td>
 
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
@@ -647,6 +655,14 @@ const SalesPage = () => {
                             >
                               <Printer className="w-4 h-4" />
                               Print
+                            </button>
+
+                            <button
+                              onClick={() => handlePreview(sale)}
+                              className="flex items-center gap-1 px-3 py-2 text-red-500 hover:bg-red-500 hover:bg-opacity-10 rounded-lg transition-colors text-sm font-medium"
+                            >
+                              <X className="w-4 h-4" />
+                              Cancel
                             </button>
                           </div>
                         </td>

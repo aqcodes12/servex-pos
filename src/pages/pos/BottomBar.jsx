@@ -9,6 +9,7 @@ const BottomBar = ({
   selectedPaymentMode,
   onSelectPaymentMode,
   onComplete,
+  loading,
 }) => {
   const paymentBtnBase = `
     flex-1 h-14 rounded-xl
@@ -98,7 +99,7 @@ const BottomBar = ({
 
           {/* Print/Complete */}
           <button
-            disabled={!canPay}
+            disabled={!canPay || loading || !selectedPaymentMode}
             onClick={onComplete}
             className="
               flex-[1.5] h-14 rounded-xl
@@ -109,7 +110,7 @@ const BottomBar = ({
               shadow-md hover:shadow-lg
             "
           >
-            Print / Complete
+            {loading ? "Processing..." : "Print / Complete"}
           </button>
 
           {/* Clear */}
