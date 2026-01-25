@@ -3,6 +3,7 @@ import { Edit2, Trash2, Plus, Search, Trash2Icon } from "lucide-react";
 import axios from "axios";
 import MoneyValue from "../../components/MoneyValue";
 import ProductModal from "./components/ProductModal";
+import CreateCategoryModal from "./components/CreateCategoryModal";
 
 const ProductsPage = () => {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -17,6 +18,7 @@ const ProductsPage = () => {
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [loadingCategories, setLoadingCategories] = useState(false);
   const [apiError, setApiError] = useState("");
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
 
   const token = localStorage.getItem("token");
 
@@ -109,21 +111,33 @@ const ProductsPage = () => {
     <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-primary mb-2">Products</h1>
-            <p className="text-text opacity-70">
-              Manage your product inventory
-            </p>
-          </div>
+        <div className="mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
+            <div>
+              <h1 className="text-4xl font-bold text-primary mb-2">Products</h1>
+              <p className="text-text opacity-60 text-sm">
+                Manage your product inventory
+              </p>
+            </div>
 
-          <button
-            onClick={handleAddNew}
-            className="flex items-center gap-2 bg-secondary text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition-all font-medium shadow-sm"
-          >
-            <Plus className="w-5 h-5" />
-            Add Product
-          </button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => setShowCategoryModal(true)}
+                className="flex items-center justify-center gap-2 bg-white text-primary px-5 py-2.5 rounded-lg hover:bg-gray-50 transition-all font-medium shadow-sm border border-gray-200 whitespace-nowrap"
+              >
+                <Plus className="w-5 h-5" />
+                Add Category
+              </button>
+
+              <button
+                onClick={handleAddNew}
+                className="flex items-center justify-center gap-2 bg-secondary text-white px-5 py-2.5 rounded-lg hover:bg-opacity-90 transition-all font-medium shadow-sm whitespace-nowrap"
+              >
+                <Plus className="w-5 h-5" />
+                Add Product
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Error */}
@@ -272,6 +286,15 @@ const ProductsPage = () => {
           // ✅ refresh both products & categories after adding new product
           fetchProducts();
           fetchCategories();
+        }}
+      />
+
+      <CreateCategoryModal
+        open={showCategoryModal}
+        onClose={() => setShowCategoryModal(false)}
+        onSuccess={() => {
+          fetchCategories(); // refresh chips
+          setActiveCategory("All");
         }}
       />
     </div>
