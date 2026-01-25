@@ -23,6 +23,9 @@ const SalesPage = () => {
   const [statusFilter, setStatusFilter] = useState("");
   // "" | "PAID" | "CANCELLED" | "CANCEL_REQUESTED"
 
+  const posUser = JSON.parse(localStorage.getItem("pos_user"));
+  const role = posUser?.role; // "ADMIN" | "CASHIER"
+
   const token = localStorage.getItem("token");
 
   const formatDate = (dateString) => {
@@ -127,6 +130,44 @@ const SalesPage = () => {
     window.print();
     document.body.innerHTML = originalContent;
     window.location.reload();
+  };
+
+  const handleCancelSale = async (sale) => {
+    try {
+      if (!sale?.id) return;
+
+      // prevent duplicate cancel
+      if (sale.status === "CANCELLED" || sale.status === "CANCEL_REQUESTED") {
+        alert("Order already cancelled or cancellation requested");
+        return;
+      }
+
+      const endpoint =
+        role === "ADMIN"
+          ? `/order/${sale.id}/cancel`
+          : `/order/${sale.id}/request-cancel`;
+
+      await axios.post(endpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      alert(
+        role === "ADMIN"
+          ? "Order cancelled successfully"
+          : "Cancel request sent to admin",
+      );
+
+      // 🔄 refresh list
+      fetchOrders();
+    } catch (err) {
+      setApiError(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Failed to cancel order",
+      );
+    }
   };
 
   const filteredSales = useMemo(() => {
@@ -317,13 +358,24 @@ const SalesPage = () => {
                               Print
                             </button>
 
-                            <button
-                              onClick={() => handlePreview(sale)}
-                              className="flex items-center gap-1 px-3 py-2 text-red-500 hover:bg-red-500 hover:bg-opacity-10 rounded-lg transition-colors text-sm font-medium"
-                            >
-                              <X className="w-4 h-4" />
-                              Cancel
-                            </button>
+                            {sale.status !== "CANCELLED" &&
+                              sale.status !== "CANCEL_REQUESTED" && (
+                                <button
+                                  onClick={() => handleCancelSale(sale)}
+                                  className={`flex items-center gap-1 px-3 py-2 rounded-lg
+        transition-colors text-sm font-medium
+        ${
+          role === "ADMIN"
+            ? "text-red-600 hover:bg-red-600 hover:bg-opacity-10"
+            : "text-yellow-600 hover:bg-yellow-600 hover:bg-opacity-10"
+        }`}
+                                >
+                                  <X className="w-4 h-4" />
+                                  {role === "ADMIN"
+                                    ? "Cancel"
+                                    : "Request Cancel"}
+                                </button>
+                              )}
                           </div>
                         </td>
                       </tr>
