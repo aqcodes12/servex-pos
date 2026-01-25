@@ -17,6 +17,7 @@ const PosScreen = () => {
   const role = posUser?.role;
   const [showRecentOrders, setShowRecentOrders] = useState(false);
   const [recentOrders, setRecentOrders] = useState([]);
+  const [showLastOrder, setShowLastOrder] = useState(false);
 
   const token = localStorage.getItem("token");
   const [activeCategory, setActiveCategory] = useState("All");
@@ -186,6 +187,7 @@ const PosScreen = () => {
       setCart([]);
 
       await fetchLastOrder();
+      setShowLastOrder(true);
 
       alert("Order created successfully!");
     } catch (err) {
@@ -265,6 +267,11 @@ const PosScreen = () => {
   const updateCart = (updater) => setCart((prev) => updater(prev));
 
   const addToCart = (product) => {
+    if (showLastOrder) {
+      setShowLastOrder(false);
+      setLastOrder(null);
+    }
+
     updateCart((cart) => {
       const item = cart.find((i) => i.id === product.id);
       return item
@@ -465,7 +472,7 @@ const PosScreen = () => {
             onComplete={createOrder}
             loading={creatingOrder}
           />
-          {lastOrder && (
+          {showLastOrder && lastOrder && (
             <LastOrderBar
               order={lastOrder}
               role={role}
