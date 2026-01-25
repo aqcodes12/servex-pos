@@ -48,8 +48,6 @@ const ProductsPage = () => {
       setLoadingCategories(false);
     }
   };
-
-  // ✅ fetch products
   const fetchProducts = async () => {
     try {
       setLoadingProducts(true);
@@ -63,11 +61,18 @@ const ProductsPage = () => {
 
       const apiProducts = res.data?.data || [];
 
-      // ✅ Map backend format to UI format
       const mapped = apiProducts.map((p) => ({
         id: p._id,
         name: p.name,
-        category: p.category,
+
+        // 🔑 normalize category
+        category:
+          p.categoryId?.name || // NEW API
+          p.category || // OLD API
+          "Uncategorized",
+
+        categoryId: p.categoryId?._id || null,
+
         sellingPrice: p.sellingPrice,
         costPrice: p.costPrice,
         status: p.isActive,

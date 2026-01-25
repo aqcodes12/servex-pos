@@ -5,6 +5,8 @@ import axios from "axios";
 const ProductModal = ({ open, onClose, onSuccess, editingProduct }) => {
   const [isSaving, setIsSaving] = useState(false);
   const [apiError, setApiError] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [loadingCategories, setLoadingCategories] = useState(false);
 
   // ✅ formData state inside modal
   const [formData, setFormData] = useState({
@@ -15,14 +17,35 @@ const ProductModal = ({ open, onClose, onSuccess, editingProduct }) => {
     status: true,
   });
 
-  // ✅ when modal open / edit product -> auto fill form
+  const fetchCategories = async () => {
+    try {
+      setLoadingCategories(true);
+
+      const token = localStorage.getItem("token");
+
+      const res = await axios.get("/category/categories", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setCategories(res.data?.data || []);
+    } catch (err) {
+      setApiError("Failed to load categories");
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
+
   useEffect(() => {
     if (!open) return;
+
+    fetchCategories();
 
     if (editingProduct) {
       setFormData({
         name: editingProduct.name || "",
-        category: editingProduct.category || "",
+        categoryId: editingProduct.categoryId || "",
         sellingPrice: editingProduct.sellingPrice || "",
         costPrice: editingProduct.costPrice || "",
         status: editingProduct.status ?? true,
@@ -30,7 +53,7 @@ const ProductModal = ({ open, onClose, onSuccess, editingProduct }) => {
     } else {
       setFormData({
         name: "",
-        category: "",
+        categoryId: "",
         sellingPrice: "",
         costPrice: "",
         status: true,
@@ -52,10 +75,9 @@ const ProductModal = ({ open, onClose, onSuccess, editingProduct }) => {
       return;
     }
 
-    // ✅ validation
     if (
       !formData.name ||
-      !formData.category ||
+      !formData.categoryId ||
       !formData.sellingPrice ||
       !formData.costPrice
     ) {
@@ -66,13 +88,11 @@ const ProductModal = ({ open, onClose, onSuccess, editingProduct }) => {
     try {
       setIsSaving(true);
 
-      // ✅ payload for both create + update
       const payload = {
         name: formData.name,
-        category: formData.category,
+        categoryId: formData.categoryId,
         sellingPrice: Number(formData.sellingPrice),
         costPrice: Number(formData.costPrice),
-        isActive: formData.status, // ✅ important (backend expects isActive)
       };
 
       let res;
@@ -157,21 +177,31 @@ const ProductModal = ({ open, onClose, onSuccess, editingProduct }) => {
             />
           </div>
 
-          {/* Category */}
           <div>
             <label className="block text-sm font-medium text-text mb-2">
               Category
             </label>
-            <input
-              type="text"
-              value={formData.category}
+
+            <select
+              value={formData.categoryId}
               onChange={(e) =>
-                setFormData({ ...formData, category: e.target.value })
+                setFormData({ ...formData, categoryId: e.target.value })
               }
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
-              placeholder="Enter category"
-              disabled={isSaving}
-            />
+              disabled={isSaving || loadingCategories}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-secondary"
+            >
+              <option value="">
+                {loadingCategories
+                  ? "Loading categories..."
+                  : "Select category"}
+              </option>
+
+              {categories.map((cat) => (
+                <option key={cat._id} value={cat._id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Selling Price */}
