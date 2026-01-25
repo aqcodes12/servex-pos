@@ -197,6 +197,44 @@ const PosScreen = () => {
     }
   };
 
+  const handleCancelOrder = async (order) => {
+    try {
+      if (!order?.orderId) return;
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setApiError("Token missing. Please login again.");
+        return;
+      }
+
+      const endpoint =
+        role === "ADMIN"
+          ? `/order/${order.orderId}/cancel`
+          : `/order/${order.orderId}/request-cancel`;
+
+      await axios.post(endpoint, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      alert(
+        role === "ADMIN"
+          ? "Order cancelled successfully"
+          : "Cancel request sent to admin",
+      );
+
+      // 🔄 refresh last order + recent orders
+      fetchLastOrder();
+    } catch (err) {
+      setApiError(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Failed to cancel order",
+      );
+    }
+  };
+
   // ------------------ LIFE CYCLE ------------------
 
   useEffect(() => {
@@ -424,8 +462,10 @@ const PosScreen = () => {
             <LastOrderBar
               order={lastOrder}
               role={role}
-              // onReprint={() => (lastOrder)}
-              // onCancel={() => handleCancelOrder(lastOrder)}
+              onReprint={() => {
+                console.log("Reprint order:", lastOrder);
+              }}
+              onCancel={() => handleCancelOrder(lastOrder)}
             />
           )}
         </div>
