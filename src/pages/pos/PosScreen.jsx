@@ -185,6 +185,8 @@ const PosScreen = () => {
       // ✅ clear cart after payment
       setCart([]);
 
+      await fetchLastOrder();
+
       alert("Order created successfully!");
     } catch (err) {
       setApiError(
