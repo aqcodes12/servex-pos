@@ -52,14 +52,20 @@ const PosScreen = () => {
     try {
       setLoadingCategories(true);
 
-      const res = await axios.get("/product/categories", {
+      const res = await axios.get("/category/categories", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       const apiCategories = res.data?.data || [];
 
-      // ✅ Inject "All" at UI level
-      setCategories(["All", ...apiCategories]);
+      // 🔑 normalize to string list for POS UI
+      const categoryNames = apiCategories
+        .filter((c) => c.isActive)
+        .map((c) => c.name);
+
+      setCategories(["All", ...categoryNames]);
+    } catch (err) {
+      setApiError("Failed to load categories");
     } finally {
       setLoadingCategories(false);
     }
