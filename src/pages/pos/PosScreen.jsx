@@ -199,7 +199,8 @@ const PosScreen = () => {
 
   const handleCancelOrder = async (order) => {
     try {
-      if (!order?.orderId) return;
+      const orderId = order?.orderId || order?._id;
+      if (!orderId) return;
 
       const token = localStorage.getItem("token");
       if (!token) {
@@ -209,14 +210,18 @@ const PosScreen = () => {
 
       const endpoint =
         role === "ADMIN"
-          ? `/order/${order.orderId}/cancel`
-          : `/order/${order.orderId}/request-cancel`;
+          ? `/order/${orderId}/cancel`
+          : `/order/${orderId}/request-cancel`;
 
-      await axios.post(endpoint, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      await axios.post(
+        endpoint,
+
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       alert(
         role === "ADMIN"
@@ -224,8 +229,8 @@ const PosScreen = () => {
           : "Cancel request sent to admin",
       );
 
-      // 🔄 refresh last order + recent orders
-      fetchLastOrder();
+      // 🔄 refresh UI
+      await fetchLastOrder();
     } catch (err) {
       setApiError(
         err?.response?.data?.message ||
@@ -523,9 +528,7 @@ const PosScreen = () => {
         onReprint={(order) => {
           console.log("Reprint order:", order);
         }}
-        onCancel={(order) => {
-          console.log("Cancel order:", order);
-        }}
+        onCancel={handleCancelOrder}
       />
     </>
   );
