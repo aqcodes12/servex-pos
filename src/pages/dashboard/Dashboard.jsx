@@ -10,6 +10,7 @@ const Dashboard = () => {
     itemsSold: 0,
     profit: 0,
   });
+  const [paymentModeSales, setPaymentModeSales] = useState([]);
 
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
@@ -51,8 +52,34 @@ const Dashboard = () => {
     }
   };
 
+  const fetchPaymentModeSales = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setApiError("Token not found. Please login again.");
+        return;
+      }
+
+      const res = await axios.get("/order/payment-mode-sales", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setPaymentModeSales(res.data?.data || {});
+    } catch (err) {
+      setApiError(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Failed to load payment mode sales",
+      );
+    }
+  };
+
   useEffect(() => {
     fetchTodayDashboard();
+    fetchPaymentModeSales();
   }, []);
 
   const cards = [
@@ -86,6 +113,26 @@ const Dashboard = () => {
     },
   ];
 
+  const paymentCards = Object.entries(paymentModeSales).map(
+    ([mode, amount]) => ({
+      title: mode,
+      value: <MoneyValue amount={amount} size={22} />,
+      icon: DollarSign,
+      bg:
+        mode === "CASH"
+          ? "bg-green-50"
+          : mode === "UPI"
+            ? "bg-indigo-50"
+            : "bg-slate-50",
+      iconColor:
+        mode === "CASH"
+          ? "text-green-600"
+          : mode === "UPI"
+            ? "text-indigo-600"
+            : "text-slate-600",
+    }),
+  );
+
   return (
     <div className="h-[85vh] p-4 sm:p-6">
       {/* Header */}
@@ -98,7 +145,10 @@ const Dashboard = () => {
         </div>
 
         <button
-          onClick={fetchTodayDashboard}
+          onClick={() => {
+            fetchTodayDashboard();
+            fetchPaymentModeSales();
+          }}
           className="px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-sm font-medium"
         >
           Refresh
@@ -145,6 +195,43 @@ const Dashboard = () => {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {Object.keys(paymentModeSales).length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold text-slate-800 mb-4">
+            Payment Mode Sales
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {paymentCards.map((card, index) => {
+              const Icon = card.icon;
+              return (
+                <div
+                  key={index}
+                  className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col gap-4"
+                >
+                  {/* Icon */}
+                  <div
+                    className={`w-12 h-12 flex items-center justify-center rounded-xl ${card.bg}`}
+                  >
+                    <Icon className={`w-6 h-6 ${card.iconColor}`} />
+                  </div>
+
+                  {/* Content */}
+                  <div>
+                    <p className="text-sm text-slate-500 font-medium mb-1">
+                      {card.title}
+                    </p>
+                    <div className="text-2xl font-bold text-slate-800">
+                      {card.value}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
