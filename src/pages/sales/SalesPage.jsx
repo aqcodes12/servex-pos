@@ -78,28 +78,34 @@ const SalesPage = () => {
 
       const orders = res.data?.data || [];
 
-      // ✅ Map backend order -> UI sale object
-      const mapped = orders.map((o) => ({
-        id: o._id,
-        date: o.createdAt,
-        time: formatTime(o.createdAt),
-        invoiceNumber: o.invoiceNumber,
-        totalAmount: o.grandTotal,
-        paymentMode: o.paymentMode,
+      const mapped = orders.map((o) => {
+        let derivedStatus = o.status;
 
-        // Invoice table uses: name, quantity, price
-        items: (o.items || []).map((it) => ({
-          name: it.name,
-          quantity: it.quantity,
-          price: it.sellingPrice,
-        })),
+        if (o.status === "PAID" && o.cancelRequested) {
+          derivedStatus = "CANCEL_REQUESTED";
+        }
 
-        // if you want extra fields later
-        subtotal: o.subtotal,
-        taxAmount: o.taxAmount,
-        taxRate: o.taxRate,
-        status: o.status,
-      }));
+        return {
+          id: o._id,
+          date: o.createdAt,
+          time: formatTime(o.createdAt),
+          invoiceNumber: o.invoiceNumber,
+          totalAmount: o.grandTotal,
+          paymentMode: o.paymentMode,
+
+          items: (o.items || []).map((it) => ({
+            name: it.name,
+            quantity: it.quantity,
+            price: it.sellingPrice,
+          })),
+
+          subtotal: o.subtotal,
+          taxAmount: o.taxAmount,
+          taxRate: o.taxRate,
+
+          status: derivedStatus, // ✅ FIXED
+        };
+      });
 
       setSales(mapped);
     } catch (err) {
