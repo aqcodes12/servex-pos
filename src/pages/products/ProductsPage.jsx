@@ -28,14 +28,20 @@ const ProductsPage = () => {
       setLoadingCategories(true);
       setApiError("");
 
-      const res = await axios.get("/product/categories", {
+      const res = await axios.get("/category/categories", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
       const apiCategories = res.data?.data || [];
-      setCategories(["All", ...apiCategories]);
+
+      // 🔑 map objects → names
+      const categoryNames = apiCategories
+        .filter((c) => c.isActive)
+        .map((c) => c.name);
+
+      setCategories(["All", ...categoryNames]);
     } catch (err) {
       setApiError(err?.response?.data?.message || "Failed to load categories");
     } finally {
