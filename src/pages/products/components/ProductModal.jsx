@@ -93,6 +93,7 @@ const ProductModal = ({ open, onClose, onSuccess, editingProduct }) => {
         categoryId: formData.categoryId,
         sellingPrice: Number(formData.sellingPrice),
         costPrice: Number(formData.costPrice),
+        isActive: formData.status,
       };
 
       let res;
