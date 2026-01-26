@@ -16,11 +16,17 @@ const LastOrderBar = ({ order, role, onCancel, onReprint }) => {
 
   return (
     <div className="border-t border-slate-200 bg-white">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        {/* LEFT INFO */}
-        <div className="flex flex-wrap items-center gap-4 text-sm sm:text-base">
+      <div
+        className="
+          px-4 py-3
+          flex items-center gap-4
+          flex-nowrap min-w-0
+        "
+      >
+        {/* LEFT INFO (never wraps) */}
+        <div className="flex items-center gap-4 text-sm flex-nowrap min-w-0">
           {/* Invoice */}
-          <div className="font-semibold text-slate-700">
+          <div className="font-semibold text-slate-700 whitespace-nowrap">
             Invoice:
             <span className="ml-2 text-teal-600 font-bold">
               {order.invoiceNo}
@@ -28,7 +34,7 @@ const LastOrderBar = ({ order, role, onCancel, onReprint }) => {
           </div>
 
           {/* Total */}
-          <div className="font-semibold text-slate-700">
+          <div className="font-semibold text-slate-700 whitespace-nowrap">
             Total:
             <span className="ml-2 font-bold text-slate-900">
               <MoneyValue amount={order.totalAmount} size={16} />
@@ -37,35 +43,39 @@ const LastOrderBar = ({ order, role, onCancel, onReprint }) => {
 
           {/* Status */}
           <span
-            className={`px-3 py-1 rounded-full text-xs font-bold border ${
-              statusStyles[order.status] ||
-              "bg-gray-50 text-gray-700 border-gray-200"
-            }`}
+            className={`px-3 py-1 rounded-full text-xs font-bold border whitespace-nowrap
+              ${
+                statusStyles[order.status] ||
+                "bg-gray-50 text-gray-700 border-gray-200"
+              }
+            `}
           >
             {order.status}
           </span>
         </div>
 
-        {/* RIGHT ACTIONS */}
-        <div className="flex flex-wrap gap-2">
-          {/* CASHIER ACTION */}
+        {/* RIGHT ACTIONS (scroll-safe, single line) */}
+        <div className="flex items-center gap-2 ml-auto flex-nowrap overflow-x-auto scrollbar-hide">
+          {/* CASHIER */}
           {role === "CASHIER" && !isCancelled && (
             <>
               <button
                 onClick={onCancel}
                 className="flex items-center gap-2 px-3 py-2
                 border border-yellow-300 text-yellow-700
-                rounded-lg hover:bg-yellow-50 transition"
+                rounded-lg hover:bg-yellow-50 transition
+                whitespace-nowrap"
               >
                 <RotateCcw size={16} />
                 Request Cancel
               </button>
-              {/* Reprint (Both roles) */}
+
               <button
                 onClick={onReprint}
                 className="flex items-center gap-2 px-3 py-2
-              border border-slate-300 text-slate-700
-              rounded-lg hover:bg-slate-100 transition"
+                border border-slate-300 text-slate-700
+                rounded-lg hover:bg-slate-100 transition
+                whitespace-nowrap"
               >
                 <Printer size={16} />
                 Reprint
@@ -73,23 +83,26 @@ const LastOrderBar = ({ order, role, onCancel, onReprint }) => {
             </>
           )}
 
-          {/* ADMIN ACTION */}
+          {/* ADMIN */}
           {role === "ADMIN" && !isCancelled && (
             <>
               <button
                 onClick={onReprint}
                 className="flex items-center gap-2 px-3 py-2
-              border border-slate-300 text-slate-700
-              rounded-lg hover:bg-slate-100 transition"
+                border border-slate-300 text-slate-700
+                rounded-lg hover:bg-slate-100 transition
+                whitespace-nowrap"
               >
                 <Printer size={16} />
                 Reprint
               </button>
+
               <button
                 onClick={onCancel}
                 className="flex items-center gap-2 px-3 py-2
                 border border-red-300 text-red-700
-                rounded-lg hover:bg-red-50 transition"
+                rounded-lg hover:bg-red-50 transition
+                whitespace-nowrap"
               >
                 <XCircle size={16} />
                 Cancel Order
