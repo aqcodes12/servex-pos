@@ -556,6 +556,7 @@ import BrandLogo from "../../assets/slogo.png";
 import { Clock, LogOut } from "lucide-react";
 import LastOrderBar from "./LastOrderBar";
 import RecentOrdersDrawer from "./RecentOrdersDrawer";
+import { showSuccessToast } from "../../utils/toastConfig";
 
 const PosScreen = () => {
   const navigate = useNavigate();
@@ -748,16 +749,31 @@ const PosScreen = () => {
   };
 
   const handleCancelOrder = async (order) => {
+    const id = order.orderId || order._id; // 🔥 FIX
+
+    if (!id) {
+      console.error("Order ID missing", order);
+      return;
+    }
+
     const endpoint =
-      role === "ADMIN"
-        ? `/order/${order.orderId}/cancel`
-        : `/order/${order.orderId}/request-cancel`;
+      role === "ADMIN" ? `/order/${id}/cancel` : `/order/${id}/request-cancel`;
 
-    await axios.post(endpoint, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    try {
+      const res = await axios.post(endpoint, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    await fetchLastOrder();
+      if (res.status === 200 && res.data.success) {
+        const message = res.data.msg;
+        showSuccessToast(message || "Order cancellation successful");
+      }
+
+      await fetchLastOrder();
+    } catch (err) {
+      console.error(err);
+      setApiError("Failed to cancel order");
+    }
   };
 
   /* ---------------- LIFE CYCLE ---------------- */

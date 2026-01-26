@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Eye, Printer, Search, X, Calendar } from "lucide-react";
 import axios from "axios";
 import MoneyValue from "../../components/MoneyValue";
+import { showSuccessToast } from "../../utils/toastConfig";
 
 const StatusBadge = ({ status }) => {
   const styles = {
@@ -121,9 +122,9 @@ const SalesPage = () => {
           ? `/order/${sale.id}/cancel`
           : `/order/${sale.id}/request-cancel`;
 
-      await axios.post(
+      const res = await axios.post(
         endpoint,
-        {}, // ✅ empty body
+
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -131,11 +132,10 @@ const SalesPage = () => {
         },
       );
 
-      alert(
-        role === "ADMIN"
-          ? "Order cancelled successfully"
-          : "Cancel request sent to admin",
-      );
+      if (res.status === 200 && res.data.success) {
+        const message = res.data.msg;
+        showSuccessToast(message || "Order cancellation successful");
+      }
 
       fetchOrders(); // refresh list
     } catch (err) {
