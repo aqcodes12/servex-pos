@@ -9,16 +9,14 @@ const CategoriesPage = () => {
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
 
-  // ✨ Add category modal
   const [showAddModal, setShowAddModal] = useState(false);
   const [newCategory, setNewCategory] = useState("");
   const [creating, setCreating] = useState(false);
 
-  // ✏️ Edit
   const [editingId, setEditingId] = useState(null);
   const [editingName, setEditingName] = useState("");
 
-  /* ---------------- API CALLS ---------------- */
+  /* ---------------- API ---------------- */
 
   const fetchCategories = async () => {
     try {
@@ -106,8 +104,6 @@ const CategoriesPage = () => {
     }
   };
 
-  /* ---------------- LIFE CYCLE ---------------- */
-
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -115,137 +111,165 @@ const CategoriesPage = () => {
   /* ---------------- UI ---------------- */
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Category Management</h1>
+    <div className="min-h-screen bg-background p-4 sm:p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-primary">Categories</h1>
+            <p className="text-sm text-text/70 mt-1">
+              Manage product categories
+            </p>
+          </div>
 
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
-        >
-          <Plus size={16} />
-          Add Category
-        </button>
-      </div>
-
-      {apiError && (
-        <div className="mb-4 bg-red-50 text-red-600 px-4 py-2 rounded-lg">
-          {apiError}
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg
+            bg-secondary text-white hover:bg-opacity-90 transition
+            text-sm font-medium"
+          >
+            <Plus size={16} />
+            Add Category
+          </button>
         </div>
-      )}
 
-      {/* Categories table */}
-      <div className="bg-white border rounded-xl overflow-hidden">
-        {loading ? (
-          <div className="p-6 text-center text-gray-500">
-            Loading categories...
+        {/* Error */}
+        {apiError && (
+          <div className="bg-red-50 text-red-600 border border-red-200 px-4 py-3 rounded-lg">
+            {apiError}
           </div>
-        ) : categories.length === 0 ? (
-          <div className="p-6 text-center text-gray-400">
-            No categories found
-          </div>
-        ) : (
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="text-left px-4 py-3">Name</th>
-                <th className="text-left px-4 py-3">Status</th>
-                <th className="text-right px-4 py-3">Actions</th>
-              </tr>
-            </thead>
-
-            <tbody className="divide-y">
-              {categories.map((cat) => (
-                <tr key={cat._id}>
-                  <td className="px-4 py-3">
-                    {editingId === cat._id ? (
-                      <input
-                        value={editingName}
-                        onChange={(e) => setEditingName(e.target.value)}
-                        className="px-2 py-1 border rounded-md w-full"
-                      />
-                    ) : (
-                      <span className="font-medium">{cat.name}</span>
-                    )}
-                  </td>
-
-                  <td className="px-4 py-3">
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm font-semibold
-                        ${
-                          cat.isActive
-                            ? "bg-green-100 text-green-700"
-                            : "bg-gray-100 text-gray-500"
-                        }`}
-                    >
-                      {cat.isActive ? "Active" : "Inactive"}
-                    </span>
-                  </td>
-
-                  <td className="px-4 py-3 text-right space-x-2">
-                    {editingId === cat._id ? (
-                      <>
-                        <button
-                          onClick={() => updateCategory(cat._id)}
-                          className="text-green-600"
-                        >
-                          <Check size={16} />
-                        </button>
-                        <button
-                          onClick={() => {
-                            setEditingId(null);
-                            setEditingName("");
-                          }}
-                          className="text-gray-500"
-                        >
-                          <X size={16} />
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => {
-                            setEditingId(cat._id);
-                            setEditingName(cat.name);
-                          }}
-                          className="text-blue-600"
-                        >
-                          <Pencil size={16} />
-                        </button>
-
-                        <button
-                          onClick={() => toggleStatus(cat._id, cat.isActive)}
-                          className={`px-3 py-1 rounded-md text-sm
-                            ${
-                              cat.isActive
-                                ? "text-red-600 hover:bg-red-50"
-                                : "text-green-600 hover:bg-green-50"
-                            }`}
-                        >
-                          {cat.isActive ? "Disable" : "Enable"}
-                        </button>
-                      </>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         )}
+
+        {/* Table */}
+        <div className="bg-white border rounded-xl overflow-hidden">
+          {loading ? (
+            <div className="divide-y">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="px-6 py-4 flex justify-between animate-pulse"
+                >
+                  <div className="h-4 w-40 bg-gray-200 rounded" />
+                  <div className="h-4 w-24 bg-gray-200 rounded" />
+                </div>
+              ))}
+            </div>
+          ) : categories.length === 0 ? (
+            <div className="p-10 text-center text-text/60">
+              No categories created yet
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-background border-b">
+                  <tr className="text-text/70">
+                    <th className="px-6 py-3 text-left font-medium">Name</th>
+                    <th className="px-6 py-3 text-left font-medium">Status</th>
+                    <th className="px-6 py-3 text-right font-medium">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y">
+                  {categories.map((cat) => (
+                    <tr key={cat._id} className="hover:bg-background">
+                      <td className="px-6 py-4 font-medium text-primary">
+                        {editingId === cat._id ? (
+                          <input
+                            value={editingName}
+                            onChange={(e) => setEditingName(e.target.value)}
+                            className="w-full px-3 py-1.5 border rounded-lg
+                            focus:ring-2 focus:ring-secondary"
+                          />
+                        ) : (
+                          cat.name
+                        )}
+                      </td>
+
+                      <td className="px-6 py-4">
+                        <span
+                          className={`text-xs font-semibold px-3 py-1 rounded-full
+                          ${
+                            cat.isActive
+                              ? "bg-secondary/10 text-secondary"
+                              : "bg-gray-100 text-gray-500"
+                          }`}
+                        >
+                          {cat.isActive ? "Active" : "Inactive"}
+                        </span>
+                      </td>
+
+                      <td className="px-6 py-4 text-right space-x-2">
+                        {editingId === cat._id ? (
+                          <>
+                            <button
+                              onClick={() => updateCategory(cat._id)}
+                              className="p-2 text-secondary hover:bg-secondary/10 rounded-lg"
+                            >
+                              <Check size={16} />
+                            </button>
+                            <button
+                              onClick={() => {
+                                setEditingId(null);
+                                setEditingName("");
+                              }}
+                              className="p-2 text-text/60 hover:bg-background rounded-lg"
+                            >
+                              <X size={16} />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => {
+                                setEditingId(cat._id);
+                                setEditingName(cat.name);
+                              }}
+                              className="p-2 text-secondary hover:bg-secondary/10 rounded-lg"
+                            >
+                              <Pencil size={16} />
+                            </button>
+
+                            <button
+                              onClick={() =>
+                                toggleStatus(cat._id, cat.isActive)
+                              }
+                              className={`text-xs font-medium px-3 py-1 rounded-lg
+                              ${
+                                cat.isActive
+                                  ? "text-red-600 hover:bg-red-50"
+                                  : "text-green-600 hover:bg-green-50"
+                              }`}
+                            >
+                              {cat.isActive ? "Disable" : "Enable"}
+                            </button>
+                          </>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* 🔥 Add Category Modal */}
+      {/* Add Category Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
           <div className="bg-white rounded-xl shadow-lg w-[90%] max-w-sm p-6">
-            <h2 className="text-lg font-semibold mb-4">Add Category</h2>
+            <h2 className="text-lg font-semibold text-primary mb-4">
+              Add Category
+            </h2>
 
             <input
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
               placeholder="Category name"
-              className="w-full px-4 py-2 border rounded-lg mb-4 focus:ring-2 focus:ring-teal-500"
+              className="w-full px-4 py-2 border rounded-lg
+              focus:ring-2 focus:ring-secondary mb-4"
             />
 
             <div className="flex justify-end gap-3">
@@ -254,7 +278,7 @@ const CategoriesPage = () => {
                   setShowAddModal(false);
                   setNewCategory("");
                 }}
-                className="px-4 py-2 border rounded-lg"
+                className="px-4 py-2 text-sm border rounded-lg hover:bg-background"
               >
                 Cancel
               </button>
@@ -262,9 +286,11 @@ const CategoriesPage = () => {
               <button
                 onClick={createCategory}
                 disabled={creating}
-                className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:opacity-50"
+                className="px-4 py-2 text-sm rounded-lg
+                bg-secondary text-white hover:bg-opacity-90
+                disabled:opacity-50"
               >
-                {creating ? "Adding..." : "Add"}
+                {creating ? "Adding…" : "Add"}
               </button>
             </div>
           </div>

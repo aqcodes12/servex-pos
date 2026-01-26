@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Edit2, Trash2, Plus, Search, Trash2Icon } from "lucide-react";
+import { Edit2, Plus, Search } from "lucide-react";
 import axios from "axios";
 import MoneyValue from "../../components/MoneyValue";
 import ProductModal from "./components/ProductModal";
@@ -7,9 +7,8 @@ import CreateCategoryModal from "./components/CreateCategoryModal";
 
 const ProductsPage = () => {
   const [activeCategory, setActiveCategory] = useState("All");
-
-  const [products, setProducts] = useState([]); // ✅ from API
-  const [categories, setCategories] = useState(["All"]); // ✅ from API
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState(["All"]);
 
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -22,90 +21,61 @@ const ProductsPage = () => {
 
   const token = localStorage.getItem("token");
 
-  // ✅ fetch categories
+  /* ---------------- API ---------------- */
+
   const fetchCategories = async () => {
     try {
       setLoadingCategories(true);
       setApiError("");
 
       const res = await axios.get("/category/categories", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      const apiCategories = res.data?.data || [];
-
-      // 🔑 map objects → names
-      const categoryNames = apiCategories
+      const names = (res.data?.data || [])
         .filter((c) => c.isActive)
         .map((c) => c.name);
 
-      setCategories(["All", ...categoryNames]);
-    } catch (err) {
-      setApiError(err?.response?.data?.message || "Failed to load categories");
+      setCategories(["All", ...names]);
+    } catch {
+      setApiError("Failed to load categories");
     } finally {
       setLoadingCategories(false);
     }
   };
+
   const fetchProducts = async () => {
     try {
       setLoadingProducts(true);
       setApiError("");
 
       const res = await axios.get("/product/get-products", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      const apiProducts = res.data?.data || [];
-
-      const mapped = apiProducts.map((p) => ({
+      const mapped = (res.data?.data || []).map((p) => ({
         id: p._id,
         name: p.name,
-
-        // 🔑 normalize category
-        category:
-          p.categoryId?.name || // NEW API
-          p.category || // OLD API
-          "Uncategorized",
-
-        categoryId: p.categoryId?._id || null,
-
+        category: p.categoryId?.name || p.category || "Uncategorized",
         sellingPrice: p.sellingPrice,
         costPrice: p.costPrice,
         status: p.isActive,
       }));
 
       setProducts(mapped);
-    } catch (err) {
-      setApiError(err?.response?.data?.message || "Failed to load products");
+    } catch {
+      setApiError("Failed to load products");
     } finally {
       setLoadingProducts(false);
     }
   };
 
-  // ✅ load products + categories when page mounts
   useEffect(() => {
-    if (!token) {
-      setApiError("Token not found. Please login again.");
-      return;
-    }
-
     fetchCategories();
     fetchProducts();
   }, []);
 
-  const handleAddNew = () => {
-    setEditingProduct(null);
-    setShowModal(true);
-  };
-
-  const handleEdit = (product) => {
-    setEditingProduct(product);
-    setShowModal(true);
-  };
+  /* ---------------- Filters ---------------- */
 
   const filteredProducts = products.filter((p) => {
     const matchesSearch =
@@ -118,183 +88,176 @@ const ProductsPage = () => {
     return matchesSearch && matchesCategory;
   });
 
+  /* ---------------- UI ---------------- */
+
   return (
-    <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-background p-4 sm:p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
-            <div>
-              <h1 className="text-4xl font-bold text-primary mb-2">Products</h1>
-              <p className="text-text opacity-60 text-sm">
-                Manage your product inventory
-              </p>
-            </div>
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-primary">Products</h1>
+            <p className="text-sm text-text/70 mt-1">
+              Manage your product inventory
+            </p>
+          </div>
 
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={() => setShowCategoryModal(true)}
-                className="flex items-center justify-center gap-2 bg-white text-primary px-5 py-2.5 rounded-lg hover:bg-gray-50 transition-all font-medium shadow-sm border border-gray-200 whitespace-nowrap"
-              >
-                <Plus className="w-5 h-5" />
-                Add Category
-              </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowCategoryModal(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 border rounded-lg
+              text-primary hover:bg-background transition text-sm font-medium"
+            >
+              <Plus size={16} />
+              Category
+            </button>
 
-              <button
-                onClick={handleAddNew}
-                className="flex items-center justify-center gap-2 bg-secondary text-white px-5 py-2.5 rounded-lg hover:bg-opacity-90 transition-all font-medium shadow-sm whitespace-nowrap"
-              >
-                <Plus className="w-5 h-5" />
-                Add Product
-              </button>
-            </div>
+            <button
+              onClick={() => {
+                setEditingProduct(null);
+                setShowModal(true);
+              }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg
+              bg-secondary text-white hover:bg-opacity-90 transition text-sm font-medium"
+            >
+              <Plus size={16} />
+              Product
+            </button>
           </div>
         </div>
 
         {/* Error */}
         {apiError && (
-          <div className="mb-4 bg-red-50 text-red-600 border border-red-200 px-4 py-3 rounded-lg">
+          <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg border border-red-200">
             {apiError}
           </div>
         )}
 
-        {/* Categories */}
-        <div className="px-4 pt-4 border-b border-gray-100 bg-white rounded-2xl">
-          <div className="flex gap-2 overflow-x-auto pb-2">
+        {/* Category Chips */}
+        <div className="bg-white border rounded-xl p-4">
+          <div className="flex gap-2 overflow-x-auto">
             {loadingCategories ? (
-              <div className="text-gray-500 py-2">Loading categories...</div>
+              <span className="text-text/60 text-sm">Loading categories…</span>
             ) : (
-              categories.map((category) => (
+              categories.map((cat) => (
                 <button
-                  key={category}
-                  onClick={() => setActiveCategory(category)}
-                  className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-all
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition
                     ${
-                      activeCategory === category
-                        ? "bg-secondary text-white shadow-sm"
-                        : "bg-gray-100 text-text hover:bg-gray-200"
+                      activeCategory === cat
+                        ? "bg-secondary text-white"
+                        : "bg-background text-text hover:bg-background/70"
                     }`}
                 >
-                  {category}
+                  {cat}
                 </button>
               ))
             )}
           </div>
         </div>
 
-        {/* Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mt-4">
-          <div className="p-4 border-b border-gray-100">
+        {/* Products Table */}
+        <div className="bg-white border rounded-xl overflow-hidden">
+          {/* Search */}
+          <div className="p-4 border-b">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text/40" />
               <input
-                type="text"
-                placeholder="Search products..."
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
                   setActiveCategory("All");
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
+                placeholder="Search products…"
+                className="w-full pl-9 pr-4 py-2 text-sm border rounded-lg
+                focus:outline-none focus:ring-2 focus:ring-secondary"
               />
             </div>
           </div>
 
+          {/* Loading */}
           {loadingProducts ? (
-            <div className="text-center py-12 text-gray-500">
-              Loading products...
+            <div className="divide-y">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="px-6 py-4 flex gap-4 animate-pulse">
+                  <div className="h-4 w-40 bg-gray-200 rounded" />
+                  <div className="h-4 w-32 bg-gray-200 rounded" />
+                  <div className="h-4 w-20 bg-gray-200 rounded" />
+                </div>
+              ))}
+            </div>
+          ) : filteredProducts.length === 0 ? (
+            <div className="p-10 text-center text-text/60">
+              No products added yet
             </div>
           ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="px-6 py-4 text-left text-base font-semibold text-primary">
-                        Item Name
-                      </th>
-                      <th className="px-6 py-4 text-left text-base font-semibold text-primary">
-                        Category
-                      </th>
-                      <th className="px-6 py-4 text-left text-base font-semibold text-primary">
-                        Selling Price
-                      </th>
-                      <th className="px-6 py-4 text-left text-base font-semibold text-primary">
-                        Cost Price
-                      </th>
-                      <th className="px-6 py-4 text-left text-base font-semibold text-primary">
-                        Status
-                      </th>
-                      <th className="px-6 py-4 text-left text-base font-semibold text-primary">
-                        Actions
-                      </th>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-background border-b">
+                  <tr className="text-text/70">
+                    <th className="px-6 py-3 text-left font-medium">Name</th>
+                    <th className="px-6 py-3 text-left font-medium">
+                      Category
+                    </th>
+                    <th className="px-6 py-3 text-left font-medium">Selling</th>
+                    <th className="px-6 py-3 text-left font-medium">Cost</th>
+                    <th className="px-6 py-3 text-left font-medium">Status</th>
+                    <th className="px-6 py-3 text-left font-medium">Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody className="divide-y">
+                  {filteredProducts.map((p) => (
+                    <tr key={p.id} className="hover:bg-background">
+                      <td className="px-6 py-4 font-medium text-primary">
+                        {p.name}
+                      </td>
+                      <td className="px-6 py-4">{p.category}</td>
+                      <td className="px-6 py-4 font-semibold">
+                        <MoneyValue amount={p.sellingPrice} size={12} />
+                      </td>
+                      <td className="px-6 py-4 text-text/70">
+                        <MoneyValue amount={p.costPrice} size={12} />
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`text-xs font-semibold px-3 py-1 rounded-full
+                          ${
+                            p.status
+                              ? "bg-secondary/10 text-secondary"
+                              : "bg-gray-100 text-gray-500"
+                          }`}
+                        >
+                          {p.status ? "Active" : "Inactive"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <button
+                          onClick={() => {
+                            setEditingProduct(p);
+                            setShowModal(true);
+                          }}
+                          className="p-2 text-secondary hover:bg-secondary/10 rounded-lg"
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-
-                  <tbody className="divide-y divide-gray-100">
-                    {filteredProducts.map((product) => (
-                      <tr
-                        key={product.id}
-                        className="hover:bg-gray-50 transition-colors"
-                      >
-                        <td className="px-6 py-4 text-text font-bold text-lg">
-                          {product.name}
-                        </td>
-                        <td className="px-6 py-4 text-text text-lg">
-                          {product.category}
-                        </td>
-                        <td className="px-6 py-4 text-lg font-semibold">
-                          <MoneyValue amount={product.sellingPrice} size={12} />
-                        </td>
-                        <td className="px-6 py-4 text-lg font-semibold">
-                          <MoneyValue amount={product.costPrice} size={12} />
-                        </td>
-
-                        <td className="px-6 py-4">
-                          <span
-                            className={`text-sm font-medium ${
-                              product.status
-                                ? "text-secondary"
-                                : "text-gray-500"
-                            }`}
-                          >
-                            {product.status ? "Active" : "Inactive"}
-                          </span>
-                        </td>
-
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => handleEdit(product)}
-                              className="p-2 text-secondary hover:bg-secondary hover:bg-opacity-10 rounded-lg transition-colors"
-                            >
-                              <Edit2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {filteredProducts.length === 0 && (
-                <div className="text-center py-12 text-gray-500">
-                  No products found
-                </div>
-              )}
-            </>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Modals */}
       <ProductModal
         open={showModal}
         onClose={() => setShowModal(false)}
         editingProduct={editingProduct}
-        onSuccess={(createdProduct) => {
-          // ✅ refresh both products & categories after adding new product
+        onSuccess={() => {
           fetchProducts();
           fetchCategories();
         }}
@@ -304,7 +267,7 @@ const ProductsPage = () => {
         open={showCategoryModal}
         onClose={() => setShowCategoryModal(false)}
         onSuccess={() => {
-          fetchCategories(); // refresh chips
+          fetchCategories();
           setActiveCategory("All");
         }}
       />
