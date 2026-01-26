@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { TrendingUp, ShoppingCart, Package, DollarSign } from "lucide-react";
 import MoneyValue from "../../components/MoneyValue";
+import RecentTable from "./RecentTable";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -234,6 +235,9 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+      <div className="mt-5">
+        <RecentTable />
+      </div>
     </div>
   );
 };
