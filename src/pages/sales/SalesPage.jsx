@@ -646,6 +646,46 @@ const SalesPage = () => {
     fetchOrders();
   }, []);
 
+  const handleCancelSale = async (sale) => {
+    try {
+      if (!sale?.id) return;
+
+      if (sale.status === "CANCELLED" || sale.status === "CANCEL_REQUESTED") {
+        alert("Order already cancelled or cancellation requested");
+        return;
+      }
+
+      const endpoint =
+        role === "ADMIN"
+          ? `/order/${sale.id}/cancel`
+          : `/order/${sale.id}/request-cancel`;
+
+      await axios.post(
+        endpoint,
+        {}, // ✅ empty body
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      alert(
+        role === "ADMIN"
+          ? "Order cancelled successfully"
+          : "Cancel request sent to admin",
+      );
+
+      fetchOrders(); // refresh list
+    } catch (err) {
+      setApiError(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Failed to cancel order",
+      );
+    }
+  };
+
   /* ---------------- Filters ---------------- */
 
   const filteredSales = useMemo(() => {
@@ -797,7 +837,7 @@ const SalesPage = () => {
                       <StatusBadge status={s.status} />
                     </td>
 
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 space-x-2">
                       <button
                         onClick={() => {
                           setSelectedSale(s);
@@ -808,6 +848,23 @@ const SalesPage = () => {
                         <Eye size={14} />
                         View
                       </button>
+
+                      {s.status !== "CANCELLED" &&
+                        (role === "ADMIN" ||
+                          s.status !== "CANCEL_REQUESTED") && (
+                          <button
+                            onClick={() => handleCancelSale(s)}
+                            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium
+          ${
+            role === "ADMIN"
+              ? "text-red-600 hover:bg-red-50"
+              : "text-yellow-600 hover:bg-yellow-50"
+          }`}
+                          >
+                            <X size={14} />
+                            {role === "ADMIN" ? "Cancel" : "Request Cancel"}
+                          </button>
+                        )}
                     </td>
                   </tr>
                 ))}
