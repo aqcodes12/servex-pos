@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Edit2, Plus, Search } from "lucide-react";
 import axios from "axios";
 import MoneyValue from "../../components/MoneyValue";
@@ -20,6 +20,9 @@ const ProductsPage = () => {
   const [showCategoryModal, setShowCategoryModal] = useState(false);
 
   const token = localStorage.getItem("token");
+
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 10; // products per page
 
   /* ---------------- API ---------------- */
 
@@ -88,6 +91,14 @@ const ProductsPage = () => {
     return matchesSearch && matchesCategory;
   });
 
+  const totalPages = Math.ceil(filteredProducts.length / PAGE_SIZE);
+
+  const paginatedProducts = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    const end = start + PAGE_SIZE;
+    return filteredProducts.slice(start, end);
+  }, [filteredProducts, page]);
+
   /* ---------------- UI ---------------- */
 
   return (
@@ -135,20 +146,23 @@ const ProductsPage = () => {
 
         {/* Category Chips */}
         <div className="bg-white border rounded-xl p-4">
-          <div className="flex gap-2 overflow-x-auto">
+          <div className="flex gap-2 overflow-x-auto flex-nowrap">
             {loadingCategories ? (
-              <span className="text-text/60 text-sm">Loading categories…</span>
+              <span className="text-text/60 text-sm whitespace-nowrap">
+                Loading categories…
+              </span>
             ) : (
               categories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
                   className={`px-4 py-1.5 rounded-full text-sm font-medium transition
-                    ${
-                      activeCategory === cat
-                        ? "bg-secondary text-white"
-                        : "bg-background text-text hover:bg-background/70"
-                    }`}
+            whitespace-nowrap flex-shrink-0
+            ${
+              activeCategory === cat
+                ? "bg-secondary text-white"
+                : "bg-background text-text hover:bg-background/70"
+            }`}
                 >
                   {cat}
                 </button>
@@ -187,7 +201,7 @@ const ProductsPage = () => {
                 </div>
               ))}
             </div>
-          ) : filteredProducts.length === 0 ? (
+          ) : paginatedProducts.length === 0 ? (
             <div className="p-10 text-center text-text/60">
               No products added yet
             </div>
@@ -208,7 +222,7 @@ const ProductsPage = () => {
                 </thead>
 
                 <tbody className="divide-y">
-                  {filteredProducts.map((p) => (
+                  {paginatedProducts.map((p) => (
                     <tr key={p.id} className="hover:bg-background">
                       <td className="px-6 py-4 font-medium text-primary">
                         {p.name}
@@ -247,6 +261,34 @@ const ProductsPage = () => {
                   ))}
                 </tbody>
               </table>
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between px-6 py-4 border-t bg-white">
+                  <span className="text-sm text-text/60">
+                    Page {page} of {totalPages}
+                  </span>
+
+                  <div className="flex gap-2">
+                    <button
+                      disabled={page === 1}
+                      onClick={() => setPage((p) => p - 1)}
+                      className="px-3 py-1 border rounded-lg text-sm
+        disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      Prev
+                    </button>
+
+                    <button
+                      disabled={page === totalPages}
+                      onClick={() => setPage((p) => p + 1)}
+                      className="px-3 py-1 border rounded-lg text-sm
+        disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
