@@ -24,6 +24,7 @@ const SalesPage = () => {
   // "" | "PAID" | "CANCELLED" | "CANCEL_REQUESTED"
 
   const posUser = JSON.parse(localStorage.getItem("pos_user"));
+  const business = posUser?.restaurant || {};
   const role = posUser?.role; // "ADMIN" | "CASHIER"
 
   const token = localStorage.getItem("token");
@@ -421,13 +422,25 @@ const SalesPage = () => {
 
             <div id="invoice-print-content" className="p-8">
               <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold text-primary mb-2">
-                  Your Business Name
+                <h1 className="text-3xl font-bold text-primary mb-1">
+                  {business.name || "Business Name"}
                 </h1>
-                <p className="text-text opacity-70">
-                  123 Business Street, City, State 12345
-                </p>
-                <p className="text-text opacity-70">Phone: (123) 456-7890</p>
+
+                {business.address && (
+                  <p className="text-text opacity-70">{business.address}</p>
+                )}
+
+                {business.phone && (
+                  <p className="text-text opacity-70">
+                    Phone: {business.phone}
+                  </p>
+                )}
+
+                {business.trn && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    TRN: {business.trn}
+                  </p>
+                )}
               </div>
 
               <div className="flex justify-between mb-8 pb-6 border-b-2 border-gray-200">
