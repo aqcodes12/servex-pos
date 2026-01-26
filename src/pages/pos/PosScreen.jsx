@@ -570,8 +570,9 @@ const PosScreen = () => {
   const [showLastOrder, setShowLastOrder] = useState(false);
   const [lastOrder, setLastOrder] = useState(null);
 
-  const [activeCategory, setActiveCategory] = useState("All");
-  const [categories, setCategories] = useState(["All"]);
+  const [categories, setCategories] = useState([{ id: "ALL", name: "All" }]);
+  const [activeCategory, setActiveCategory] = useState("ALL");
+
   const [search, setSearch] = useState("");
   const [cart, setCart] = useState([]);
 
@@ -599,15 +600,19 @@ const PosScreen = () => {
   const fetchCategories = async () => {
     try {
       setLoadingCategories(true);
+
       const res = await axios.get("/category/categories", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      const names = (res.data?.data || [])
+      const cats = (res.data?.data || [])
         .filter((c) => c.isActive)
-        .map((c) => c.name);
+        .map((c) => ({
+          id: c._id,
+          name: c.name,
+        }));
 
-      setCategories(["All", ...names]);
+      setCategories([{ id: "ALL", name: "All" }, ...cats]);
     } catch {
       setApiError("Failed to load categories");
     } finally {
@@ -644,6 +649,42 @@ const PosScreen = () => {
     } finally {
       setLoadingProducts(false);
     }
+  };
+
+  const fetchAllProducts = async () => {
+    const res = await axios.get("/product/get-products", {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { isActive: true },
+    });
+
+    setProducts(
+      (res.data?.data || []).map((p) => ({
+        id: p._id,
+        name: p.name,
+        sellingPrice: p.sellingPrice,
+        costPrice: p.costPrice,
+        isActive: p.isActive,
+      })),
+    );
+  };
+
+  const fetchProductsByCategory = async (categoryId) => {
+    const res = await axios.get(
+      `/product/get-products-by-category/${categoryId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    );
+
+    setProducts(
+      (res.data?.data || []).map((p) => ({
+        id: p._id,
+        name: p.name,
+        sellingPrice: p.sellingPrice,
+        costPrice: p.costPrice,
+        isActive: p.isActive,
+      })),
+    );
   };
 
   const fetchLastOrder = async () => {
@@ -729,8 +770,17 @@ const PosScreen = () => {
 
   useEffect(() => {
     if (!token) return;
-    fetchProducts({ searchText: search, category: activeCategory });
-  }, [activeCategory, search]);
+
+    setLoadingProducts(true);
+
+    if (activeCategory === "ALL") {
+      fetchAllProducts().finally(() => setLoadingProducts(false));
+    } else {
+      fetchProductsByCategory(activeCategory).finally(() =>
+        setLoadingProducts(false),
+      );
+    }
+  }, [activeCategory]);
 
   /* ---------------- CART ---------------- */
 
@@ -829,22 +879,19 @@ const PosScreen = () => {
                   ) : (
                     categories.map((cat) => (
                       <button
-                        key={cat}
+                        key={cat.id}
                         onClick={() => {
-                          setActiveCategory(cat);
+                          setActiveCategory(cat.id);
                           setSearch("");
                         }}
-                        className={`
-          px-6 py-3 rounded-full font-semibold text-lg
-          whitespace-nowrap flex-shrink-0
-          ${
-            activeCategory === cat
-              ? "bg-secondary text-white"
-              : "bg-background border border-slate-300"
-          }
-        `}
+                        className={`px-6 py-3 rounded-full font-semibold text-lg whitespace-nowrap
+      ${
+        activeCategory === cat.id
+          ? "bg-secondary text-white"
+          : "bg-background border border-slate-300"
+      }`}
                       >
-                        {cat}
+                        {cat.name}
                       </button>
                     ))
                   )}
