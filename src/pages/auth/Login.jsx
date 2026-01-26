@@ -1,8 +1,150 @@
+// import React, { useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import BrandLogo from "../../assets/flogo.png";
+// import { Eye, EyeOff, Layout } from "lucide-react";
+// import axios from "axios"; // ✅ add this
+
+// const LoginPage = () => {
+//   const [form, setForm] = useState({ email: "", password: "" });
+//   const [error, setError] = useState("");
+//   const [loading, setLoading] = useState(false);
+//   const navigate = useNavigate();
+//   const [showPassword, setShowPassword] = useState(false);
+
+//   const handleChange = (e) => {
+//     setForm({ ...form, [e.target.name]: e.target.value });
+//     setError("");
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setError("");
+
+//     try {
+//       setLoading(true);
+
+//       const res = await axios.post("/user/login", {
+//         email: form.email.trim(),
+//         password: form.password.trim(),
+//       });
+
+//       const token = res?.data?.data?.token;
+//       const role = res?.data?.data?.role;
+//       const user = res?.data?.data?.user;
+
+//       if (!token) {
+//         setError("Token not received from server.");
+//         return;
+//       }
+
+//       localStorage.setItem("token", token);
+//       localStorage.setItem("pos_user", JSON.stringify(user));
+//       localStorage.setItem("role", role);
+
+//       // ✅ Role based redirect
+//       if (role === "ADMIN") navigate("/pos");
+//       else navigate("/");
+//     } catch (err) {
+//       // interceptor already shows toast, but keep inline error too
+//       const msg =
+//         err?.response?.data?.msg ||
+//         err?.response?.data?.message ||
+//         "Invalid email or password";
+
+//       setError(msg);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="min-h-screen flex flex-col md:flex-row">
+//       {/* Left Side */}
+//       <div className="hidden md:flex md:w-1/2 bg-emerald-50 items-center justify-center">
+//         <div className="text-center p-8">
+//           <img
+//             src={BrandLogo}
+//             alt="Logo"
+//             className="h-12 w-auto object-contain mx-auto mb-6"
+//           />
+//           <h1 className="text-3xl font-bold text-primary">
+//             Welcome to Dineics
+//           </h1>
+//           <p className="text-gray-600 mt-3 text-sm">
+//             Log in to manage your orders, inventory, and sales.
+//           </p>
+//         </div>
+//       </div>
+
+//       {/* Right Side */}
+//       <div className="flex flex-1 items-center justify-center p-6">
+//         <div className="w-full max-w-sm bg-white rounded-2xl shadow-md p-8">
+//           <div className="flex justify-center mb-6">
+//             <Layout className="text-primary" size={28} />
+//           </div>
+
+//           <h2 className="text-xl font-semibold text-center mb-6">
+//             Sign in to your account
+//           </h2>
+
+//           <form onSubmit={handleSubmit} className="space-y-4">
+//             <input
+//               type="email"
+//               name="email"
+//               value={form.email}
+//               onChange={handleChange}
+//               placeholder="Email"
+//               className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary"
+//               required
+//               disabled={loading}
+//             />
+
+//             <div className="relative">
+//               <input
+//                 type={showPassword ? "text" : "password"}
+//                 name="password"
+//                 value={form.password}
+//                 onChange={handleChange}
+//                 placeholder="••••••••"
+//                 className="w-full border rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-primary"
+//                 required
+//                 disabled={loading}
+//               />
+
+//               <button
+//                 type="button"
+//                 onClick={() => setShowPassword(!showPassword)}
+//                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary"
+//               >
+//                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+//               </button>
+//             </div>
+
+//             {error && (
+//               <p className="text-red-500 text-sm font-medium">{error}</p>
+//             )}
+
+//             <button
+//               type="submit"
+//               disabled={loading}
+//               className="w-full bg-primary text-white py-2.5 rounded-lg font-medium disabled:opacity-60"
+//             >
+//               {loading ? "Signing In..." : "Sign In"}
+//             </button>
+//           </form>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default LoginPage;
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BrandLogo from "../../assets/flogo.png";
 import { Eye, EyeOff, Layout } from "lucide-react";
-import axios from "axios"; // ✅ add this
+import axios from "axios";
 
 const LoginPage = () => {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -41,16 +183,13 @@ const LoginPage = () => {
       localStorage.setItem("pos_user", JSON.stringify(user));
       localStorage.setItem("role", role);
 
-      // ✅ Role based redirect
       if (role === "ADMIN") navigate("/pos");
       else navigate("/");
     } catch (err) {
-      // interceptor already shows toast, but keep inline error too
       const msg =
         err?.response?.data?.msg ||
         err?.response?.data?.message ||
         "Invalid email or password";
-
       setError(msg);
     } finally {
       setLoading(false);
@@ -58,14 +197,14 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Left Side */}
+    <div className="min-h-screen flex flex-col md:flex-row bg-background">
+      {/* Left branding */}
       <div className="hidden md:flex md:w-1/2 bg-emerald-50 items-center justify-center">
         <div className="text-center p-8">
           <img
             src={BrandLogo}
             alt="Logo"
-            className="h-12 w-auto object-contain mx-auto mb-6"
+            className="h-12 mx-auto mb-6 object-contain"
           />
           <h1 className="text-3xl font-bold text-primary">
             Welcome to Dineics
@@ -76,10 +215,15 @@ const LoginPage = () => {
         </div>
       </div>
 
-      {/* Right Side */}
+      {/* Right form */}
       <div className="flex flex-1 items-center justify-center p-6">
         <div className="w-full max-w-sm bg-white rounded-2xl shadow-md p-8">
-          <div className="flex justify-center mb-6">
+          {/* Mobile logo */}
+          <div className="md:hidden flex justify-center mb-4">
+            <img src={BrandLogo} alt="Logo" className="h-10 object-contain" />
+          </div>
+
+          <div className="flex justify-center mb-4">
             <Layout className="text-primary" size={28} />
           </div>
 
@@ -94,7 +238,8 @@ const LoginPage = () => {
               value={form.email}
               onChange={handleChange}
               placeholder="Email"
-              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary"
+              className="w-full border rounded-lg px-4 py-2
+                focus:outline-none focus:ring-2 focus:ring-primary"
               required
               disabled={loading}
             />
@@ -106,15 +251,17 @@ const LoginPage = () => {
                 value={form.password}
                 onChange={handleChange}
                 placeholder="••••••••"
-                className="w-full border rounded-lg px-4 py-2 pr-10 focus:ring-2 focus:ring-primary"
+                className="w-full border rounded-lg px-4 py-2 pr-10
+                  focus:outline-none focus:ring-2 focus:ring-primary"
                 required
                 disabled={loading}
               />
 
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2
+                  text-gray-500 hover:text-primary"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -127,7 +274,12 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary text-white py-2.5 rounded-lg font-medium disabled:opacity-60"
+              className="
+                w-full bg-primary text-white py-2.5 rounded-lg font-medium
+                hover:bg-primary/90
+                focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
+                disabled:opacity-60 transition
+              "
             >
               {loading ? "Signing In..." : "Sign In"}
             </button>

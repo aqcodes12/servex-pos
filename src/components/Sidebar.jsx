@@ -23,8 +23,8 @@ const Sidebar = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false); // desktop
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-  const user = JSON.parse(localStorage.getItem("pos_user"));
-  const role = user?.role; // admin | cashier
+  const user = JSON.parse(localStorage.getItem("pos_user") || "{}");
+  const role = user?.role; // ADMIN | CASHIER
 
   const allMenuItems = [
     {
@@ -37,7 +37,7 @@ const Sidebar = () => {
       name: "POS",
       icon: Coffee,
       path: "/pos",
-      roles: ["ADMIN", "cashier"],
+      roles: ["ADMIN", "CASHIER"],
     },
     {
       name: "Products",
@@ -77,20 +77,17 @@ const Sidebar = () => {
     navigate("/login", { replace: true });
   };
 
+  // Auto-collapse sidebar on POS
   useEffect(() => {
-    if (location.pathname.startsWith("/pos")) {
-      setIsSidebarCollapsed(true);
-    } else {
-      setIsSidebarCollapsed(false);
-    }
+    setIsSidebarCollapsed(location.pathname.startsWith("/pos"));
   }, [location.pathname]);
 
   return (
     <>
-      <div className="relative min-h-screen bg-bgColor">
-        {/* Mobile Toggle */}
+      <div className="relative min-h-screen bg-background">
+        {/* Mobile toggle */}
         <button
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          onClick={() => setIsSidebarOpen((v) => !v)}
           className="sm:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white shadow"
         >
           {isSidebarOpen ? <X /> : <Menu />}
@@ -99,16 +96,17 @@ const Sidebar = () => {
         {/* Sidebar */}
         <aside
           className={`
-            fixed bg-white top-0 left-0 z-40 h-screen bg-bgColor
+            fixed top-0 left-0 z-40 h-screen bg-white
+            border-r border-slate-200
             transition-all duration-300 ease-in-out
             ${isSidebarCollapsed ? "w-20" : "w-64"}
             ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
             sm:translate-x-0
           `}
         >
-          {/* Desktop Collapse Toggle */}
+          {/* Collapse toggle (desktop) */}
           <button
-            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            onClick={() => setIsSidebarCollapsed((v) => !v)}
             className="hidden sm:flex absolute top-4 right-4 p-2 rounded-lg hover:bg-slate-100"
           >
             {isSidebarCollapsed ? <Menu /> : <X />}
@@ -117,12 +115,12 @@ const Sidebar = () => {
           {/* Logo */}
           <div className="px-6 py-8 flex justify-center">
             {!isSidebarCollapsed && (
-              <img src={BrandLogo} alt="Logo" className="h-24 object-contain" />
+              <img src={BrandLogo} alt="Logo" className="h-20 object-contain" />
             )}
           </div>
 
-          {/* Menu */}
-          <nav className="px-4 space-y-1">
+          {/* Navigation */}
+          <nav className="px-3 space-y-1">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname.startsWith(item.path);
@@ -134,15 +132,15 @@ const Sidebar = () => {
                   className={`
                     w-full flex items-center
                     ${isSidebarCollapsed ? "justify-center" : "gap-4 px-4"}
-                    py-3 rounded-xl font-semibold transition
+                    py-3 rounded-xl text-sm font-semibold transition
                     ${
                       isActive
-                        ? "bg-teal-50 text-teal-600"
-                        : "text-slate-700 hover:bg-slate-100"
+                        ? "bg-secondary/10 text-secondary"
+                        : "text-text hover:bg-slate-100"
                     }
                   `}
                 >
-                  <Icon className="w-6 h-6" />
+                  <Icon className="w-5 h-5" />
                   {!isSidebarCollapsed && <span>{item.name}</span>}
                 </button>
               );
@@ -154,32 +152,35 @@ const Sidebar = () => {
               className={`
                 w-full flex items-center
                 ${isSidebarCollapsed ? "justify-center" : "gap-4 px-4"}
-                py-3 rounded-xl font-semibold text-red-600 hover:bg-red-50
+                py-3 rounded-xl text-sm font-semibold
+                text-red-600 hover:bg-red-50
               `}
             >
-              <LogOut className="w-6 h-6" />
+              <LogOut className="w-5 h-5" />
               {!isSidebarCollapsed && <span>Logout</span>}
             </button>
           </nav>
 
-          {/* User Info */}
+          {/* User info */}
           <div className="absolute bottom-4 left-4 flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-teal-100 flex items-center justify-center">
-              <User className="w-4 h-4 text-teal-600" />
+            <div className="w-9 h-9 rounded-full bg-secondary/10 flex items-center justify-center">
+              <User className="w-4 h-4 text-secondary" />
             </div>
 
             {!isSidebarCollapsed && (
               <div className="leading-tight">
-                <p className="text-sm font-semibold text-slate-800">
+                <p className="text-sm font-semibold text-primary">
                   {user?.name || "User"}
                 </p>
-                <p className="text-xs capitalize text-slate-500">{role}</p>
+                <p className="text-xs text-slate-500 capitalize">
+                  {role?.toLowerCase()}
+                </p>
               </div>
             )}
           </div>
         </aside>
 
-        {/* Main Content */}
+        {/* Main content */}
         <div
           className={`
             transition-all duration-300
@@ -191,17 +192,17 @@ const Sidebar = () => {
             <div className="flex-grow">
               <Outlet />
             </div>
-            {role === "cashier" && <Footer />}
+            {role === "CASHIER" && <Footer />}
           </div>
         </div>
       </div>
 
-      {/* Logout Modal */}
+      {/* Logout confirm modal */}
       {showLogoutConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-xl w-[90%] max-w-sm p-6">
             <h2 className="text-lg font-semibold mb-2">Confirm Logout</h2>
-            <p className="text-sm text-gray-600 mb-6">
+            <p className="text-sm text-slate-600 mb-6">
               Are you sure you want to logout?
             </p>
 
