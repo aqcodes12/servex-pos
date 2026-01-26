@@ -14,14 +14,11 @@ const RecentTable = () => {
       setLoading(true);
       setApiError("");
 
-      const res = await axios.get(
-        "https://dineics.onrender.com/api/order/recent",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const res = await axios.get("/order/recent", {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
 
       setOrders(res.data?.data || []);
     } catch (err) {
