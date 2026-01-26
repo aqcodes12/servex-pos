@@ -823,7 +823,9 @@ const PosScreen = () => {
 
                 <div className="flex gap-3 overflow-x-auto mt-4 pb-2">
                   {loadingCategories ? (
-                    <span className="text-text/60">Loading categories…</span>
+                    <span className="text-text/60 whitespace-nowrap">
+                      Loading categories…
+                    </span>
                   ) : (
                     categories.map((cat) => (
                       <button
@@ -832,12 +834,15 @@ const PosScreen = () => {
                           setActiveCategory(cat);
                           setSearch("");
                         }}
-                        className={`px-6 py-3 rounded-full font-semibold text-lg
-                        ${
-                          activeCategory === cat
-                            ? "bg-secondary text-white"
-                            : "bg-background border border-slate-300"
-                        }`}
+                        className={`
+          px-6 py-3 rounded-full font-semibold text-lg
+          whitespace-nowrap flex-shrink-0
+          ${
+            activeCategory === cat
+              ? "bg-secondary text-white"
+              : "bg-background border border-slate-300"
+          }
+        `}
                       >
                         {cat}
                       </button>
