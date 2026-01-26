@@ -365,7 +365,8 @@ const SalesPage = () => {
                             </button>
 
                             {sale.status !== "CANCELLED" &&
-                              sale.status !== "CANCEL_REQUESTED" && (
+                              (role === "ADMIN" ||
+                                sale.status !== "CANCEL_REQUESTED") && (
                                 <button
                                   onClick={() => handleCancelSale(sale)}
                                   className={`flex items-center gap-1 px-3 py-2 rounded-lg
@@ -378,7 +379,9 @@ const SalesPage = () => {
                                 >
                                   <X className="w-4 h-4" />
                                   {role === "ADMIN"
-                                    ? "Cancel"
+                                    ? sale.status === "CANCEL_REQUESTED"
+                                      ? "Cancel"
+                                      : "Cancel"
                                     : "Request Cancel"}
                                 </button>
                               )}
