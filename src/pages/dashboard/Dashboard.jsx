@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { TrendingUp, ShoppingCart, Package, DollarSign } from "lucide-react";
+import {
+  TrendingUp,
+  ShoppingCart,
+  Package,
+  DollarSign,
+  Banknote,
+  CreditCard,
+  Smartphone,
+  Wallet,
+} from "lucide-react";
 import MoneyValue from "../../components/MoneyValue";
 import RecentTable from "./RecentTable";
 
@@ -84,6 +93,19 @@ const Dashboard = () => {
     },
   ];
 
+  const getPaymentIcon = (mode) => {
+    switch (mode.toUpperCase()) {
+      case "CASH":
+        return Banknote;
+      case "CARD":
+        return CreditCard;
+      case "UPI":
+        return Smartphone;
+      default:
+        return Wallet;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
@@ -159,22 +181,27 @@ const Dashboard = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.entries(paymentModeSales).map(([mode, amount]) => (
-                <div
-                  key={mode}
-                  className="bg-white border border-gray-100 rounded-xl p-6 space-y-4"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                    <DollarSign className="w-5 h-5 text-accent" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-text/70">{mode}</p>
-                    <div className="text-xl font-bold text-primary">
-                      <MoneyValue amount={amount} size={18} />
+              {Object.entries(paymentModeSales).map(([mode, amount]) => {
+                const Icon = getPaymentIcon(mode);
+
+                return (
+                  <div
+                    key={mode}
+                    className="bg-white border border-gray-100 rounded-xl p-6 space-y-4"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+                      <Icon className="w-5 h-5 text-accent" />
+                    </div>
+
+                    <div>
+                      <p className="text-sm text-text/70">{mode}</p>
+                      <div className="text-xl font-bold text-primary">
+                        <MoneyValue amount={amount} size={18} />
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
