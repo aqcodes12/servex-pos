@@ -917,24 +917,23 @@ const SettingsPage = () => {
                         className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-secondary"
                       />
                     </div>
-
                     <div>
                       <label className="text-sm font-medium text-text mb-1 block">
                         Country
                       </label>
-                      <select
+
+                      <input
                         value={shopInfo.country}
-                        onChange={(e) =>
-                          setShopInfo({
-                            ...shopInfo,
-                            country: e.target.value,
-                          })
-                        }
-                        className="w-full rounded-lg border border-gray-300 px-4 py-2"
-                      >
-                        <option value="INDIA">INDIA</option>
-                        <option value="SAUDI">SAUDI</option>
-                      </select>
+                        readOnly
+                        disabled
+                        className="
+      w-full rounded-lg
+      border border-gray-300
+      px-4 py-2
+      bg-gray-100 text-gray-600
+      cursor-not-allowed
+    "
+                      />
                     </div>
 
                     <div>
