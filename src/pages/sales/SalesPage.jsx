@@ -670,6 +670,26 @@ const SalesPage = () => {
     document.body.innerHTML = originalContent;
     window.location.reload();
   };
+  const TAX_RATE = 5;
+
+  const { subTotal, taxAmount, grandTotal } = useMemo(() => {
+    if (!selectedSale) {
+      return { subTotal: 0, taxAmount: 0, grandTotal: 0 };
+    }
+
+    const sub = selectedSale.items.reduce(
+      (sum, item) => sum + item.sellingPrice * item.quantity,
+      0,
+    );
+
+    const tax = (sub * TAX_RATE) / 100;
+
+    return {
+      subTotal: sub,
+      taxAmount: tax,
+      grandTotal: sub + tax,
+    };
+  }, [selectedSale]);
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6">
@@ -878,11 +898,11 @@ const SalesPage = () => {
                           {item.quantity}
                         </td>
                         <td className="py-3 text-right text-text">
-                          <MoneyValue amount={item.price} size={12} />
+                          <MoneyValue amount={item.sellingPrice} size={12} />
                         </td>
                         <td className="py-3 text-right font-medium text-text">
                           <MoneyValue
-                            amount={item.quantity * item.price}
+                            amount={item.quantity * item.sellingPrice}
                             size={12}
                           />
                         </td>
@@ -892,22 +912,34 @@ const SalesPage = () => {
                 </table>
               </div>
 
-              <div className="flex justify-end mb-8">
-                <div className="w-64">
-                  <div className="flex justify-between py-2 border-t-2 border-gray-200">
-                    <span className="text-lg font-bold text-primary">
-                      Total Amount:
-                    </span>
-                    <span className="text-lg font-bold text-primary">
-                      <MoneyValue amount={selectedSale.totalAmount} size={14} />
-                    </span>
-                  </div>
-                  <div className="flex justify-between py-2">
-                    <span className="text-sm text-gray-500">Payment Mode:</span>
-                    <span className="text-sm font-medium text-blue-600">
-                      {selectedSale.paymentMode}
-                    </span>
-                  </div>
+              <div className="w-64 space-y-2">
+                {/* Subtotal */}
+                <div className="flex justify-between text-sm text-text">
+                  <span>Subtotal</span>
+                  <MoneyValue amount={subTotal} size={12} />
+                </div>
+
+                {/* Tax */}
+                <div className="flex justify-between text-sm text-text">
+                  <span>Tax ({TAX_RATE}%)</span>
+                  <MoneyValue amount={taxAmount} size={12} />
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-gray-300 my-2" />
+
+                {/* Grand Total */}
+                <div className="flex justify-between text-lg font-bold text-primary">
+                  <span>Total Amount</span>
+                  <MoneyValue amount={grandTotal} size={14} />
+                </div>
+
+                {/* Payment Mode */}
+                <div className="flex justify-between py-1">
+                  <span className="text-sm text-gray-500">Payment Mode:</span>
+                  <span className="text-sm font-medium text-blue-600">
+                    {selectedSale.paymentMode}
+                  </span>
                 </div>
               </div>
 
