@@ -9,6 +9,7 @@ import {
   X,
   User,
   LogOut,
+  FileStack,
 } from "lucide-react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import BrandLogo from "../assets/flogo.png";
@@ -42,6 +43,12 @@ const Sidebar = () => {
       name: "Products",
       icon: ShoppingBag,
       path: "/products",
+      roles: ["ADMIN"],
+    },
+    {
+      name: "Categories",
+      icon: FileStack,
+      path: "/categories",
       roles: ["ADMIN"],
     },
     {

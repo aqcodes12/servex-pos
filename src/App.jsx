@@ -7,6 +7,7 @@ import ProductsPage from "./pages/products/ProductsPage";
 import SalesPage from "./pages/sales/SalesPage";
 import SettingsPage from "./pages/settings/SettingsPage";
 import ProtectedRoute from "./pages/auth/ProtectedRoute";
+import CategoriesPage from "./pages/category/CategoriesPage";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
               <Route path="/pos" element={<PosScreen />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/products" element={<ProductsPage />} />
+              <Route path="/categories" element={<CategoriesPage />} />
               <Route path="/sales" element={<SalesPage />} />
               <Route path="/settings" element={<SettingsPage />} />
             </Route>
