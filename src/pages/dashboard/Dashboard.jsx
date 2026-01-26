@@ -159,10 +159,10 @@ const Dashboard = () => {
                       <Icon className="w-5 h-5 text-secondary" />
                     </div>
                     <div>
-                      <p className="text-sm text-text/70">{c.label}</p>
                       <div className="text-2xl font-bold text-primary">
                         {c.value}
                       </div>
+                      <p className="text-sm text-text/70">{c.label}</p>
                     </div>
                   </div>
                 );
@@ -194,10 +194,10 @@ const Dashboard = () => {
                     </div>
 
                     <div>
-                      <p className="text-sm text-text/70">{mode}</p>
                       <div className="text-xl font-bold text-primary">
                         <MoneyValue amount={amount} size={18} />
                       </div>
+                      <p className="text-sm text-text/70">{mode}</p>
                     </div>
                   </div>
                 );
