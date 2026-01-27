@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import LoginPage from "./pages/auth/Login";
@@ -8,8 +9,26 @@ import SalesPage from "./pages/sales/SalesPage";
 import SettingsPage from "./pages/settings/SettingsPage";
 import ProtectedRoute from "./pages/auth/ProtectedRoute";
 import CategoriesPage from "./pages/category/CategoriesPage";
+import MobileComingSoonModal from "./components/MobileComingSoonModal";
 
 function App() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkDevice = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkDevice();
+    window.addEventListener("resize", checkDevice);
+
+    return () => window.removeEventListener("resize", checkDevice);
+  }, []);
+
+  if (isMobile) {
+    return <MobileComingSoonModal />;
+  }
+
   return (
     <div className="min-h-screen bg-background text-text font-sans">
       <Router>
