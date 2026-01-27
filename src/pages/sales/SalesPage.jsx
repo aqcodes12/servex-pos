@@ -4,24 +4,6 @@ import axios from "axios";
 import MoneyValue from "../../components/MoneyValue";
 import { showSuccessToast } from "../../utils/toastConfig";
 
-const StatusBadge = ({ status }) => {
-  const styles = {
-    PAID: "bg-secondary/10 text-secondary",
-    CANCELLED: "bg-red-100 text-red-600",
-    CANCEL_REQUESTED: "bg-yellow-100 text-yellow-700",
-  };
-
-  return (
-    <span
-      className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${
-        styles[status] || "bg-gray-100 text-gray-600"
-      }`}
-    >
-      {status.replace("_", " ")}
-    </span>
-  );
-};
-
 const SalesPage = () => {
   const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -81,19 +63,35 @@ const SalesPage = () => {
       const { data, pagination } = res.data;
 
       setSales(
-        (data || []).map((o) => ({
-          id: o._id,
-          invoiceNumber: o.invoiceNumber,
-          date: o.createdAt,
-          time: formatTime(o.createdAt),
-          totalAmount: o.grandTotal,
-          paymentMode: o.paymentMode,
-          status:
-            o.status === "PAID" && o.cancelRequested
-              ? "CANCEL_REQUESTED"
-              : o.status,
-          items: o.items || [],
-        })),
+        (data || []).map((o) => {
+          const statuses = [];
+
+          // Always show main status
+          statuses.push(o.status);
+
+          // If cancel requested & still paid → show both
+          if (o.status === "PAID" && o.cancelRequested) {
+            statuses.push("CANCEL_REQUESTED");
+          }
+
+          return {
+            id: o._id,
+            invoiceNumber: o.invoiceNumber,
+            date: o.createdAt,
+            time: formatTime(o.createdAt),
+            totalAmount: o.grandTotal,
+            paymentMode: o.paymentMode,
+            status: statuses,
+            cancelInfo: o.cancelRequested
+              ? {
+                  name: o.createdBy?.name,
+                  role: o.createdBy?.role,
+                  at: o.cancelRequestedAt,
+                }
+              : null,
+            items: o.items || [],
+          };
+        }),
       );
 
       setTotalPages(pagination?.totalPages || 1);
@@ -144,6 +142,25 @@ const SalesPage = () => {
           err?.message ||
           "Failed to cancel order",
       );
+    }
+  };
+
+  const handleRejectCancel = async (sale) => {
+    try {
+      const res = await axios.patch(`/order/${sale.id}/reject-cancel`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status === 200 && res.data.success) {
+        const message = res.data.msg;
+        showSuccessToast(message || "Order cancellation rejected");
+      }
+
+      fetchOrders();
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -284,10 +301,13 @@ const SalesPage = () => {
                     <td className="px-6 py-4">{s.paymentMode}</td>
 
                     <td className="px-6 py-4">
-                      <StatusBadge status={s.status} />
+                      <StatusBadge
+                        status={s.status}
+                        cancelInfo={s.cancelInfo}
+                      />
                     </td>
 
-                    <td className="px-6 py-4 space-x-2">
+                    {/* <td className="px-6 py-4 space-x-2">
                       <button
                         onClick={() => {
                           setSelectedSale(s);
@@ -302,6 +322,56 @@ const SalesPage = () => {
                       {s.status !== "CANCELLED" &&
                         (role === "ADMIN" ||
                           s.status !== "CANCEL_REQUESTED") && (
+                          <button
+                            onClick={() => handleCancelSale(s)}
+                            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium
+          ${
+            role === "ADMIN"
+              ? "text-red-600 hover:bg-red-50"
+              : "text-yellow-600 hover:bg-yellow-50"
+          }`}
+                          >
+                            <X size={14} />
+                            {role === "ADMIN" ? "Cancel" : "Request Cancel"}
+                          </button>
+                        )}
+                    </td> */}
+                    <td className="px-6 py-4 space-x-2">
+                      {/* View */}
+                      <button
+                        onClick={() => {
+                          setSelectedSale(s);
+                          setShowInvoice(true);
+                        }}
+                        className="inline-flex items-center gap-1 text-secondary hover:bg-secondary/10 px-3 py-1.5 rounded-lg"
+                      >
+                        <Eye size={14} />
+                        View
+                      </button>
+
+                      {/* ADMIN – Approve / Reject */}
+                      {role === "ADMIN" &&
+                        s.status.includes("CANCEL_REQUESTED") && (
+                          <>
+                            <button
+                              onClick={() => handleCancelSale(s)}
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-green-600 hover:bg-green-50"
+                            >
+                              ✓ Approve
+                            </button>
+
+                            <button
+                              onClick={() => handleRejectCancel(s)}
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50"
+                            >
+                              ✕ Reject
+                            </button>
+                          </>
+                        )}
+
+                      {/* Normal cancel / request */}
+                      {!s.status.includes("CANCEL_REQUESTED") &&
+                        s.status[0] !== "CANCELLED" && (
                           <button
                             onClick={() => handleCancelSale(s)}
                             className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium
@@ -507,3 +577,52 @@ const SalesPage = () => {
 };
 
 export default SalesPage;
+
+const StatusBadge = ({ status, cancelInfo }) => {
+  const styles = {
+    PAID: "bg-secondary/10 text-secondary",
+    CANCELLED: "bg-red-100 text-red-600",
+    CANCEL_REQUESTED: "bg-yellow-100 text-yellow-700",
+  };
+
+  const labelMap = {
+    PAID: "PAID",
+    CANCELLED: "CANCELLED",
+    CANCEL_REQUESTED: "CANCEL REQUESTED",
+  };
+
+  return (
+    <div className="flex gap-2">
+      {status.map((s) => {
+        const isCancelRequested = s === "CANCEL_REQUESTED";
+
+        return (
+          <div key={s} className="relative group cursor-pointer">
+            <span
+              className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold cursor-default ${
+                styles[s] || "bg-gray-100 text-gray-600"
+              }`}
+            >
+              {labelMap[s]}
+            </span>
+
+            {/* Tooltip */}
+            {isCancelRequested && cancelInfo && (
+              <div className="absolute z-50 hidden group-hover:block left-1/2 -translate-x-1/2 top-full mt-2 w-64 rounded-lg bg-black text-white text-xs p-3 shadow-lg">
+                <div className="font-semibold mb-1">Cancel Requested</div>
+                <div>
+                  <span className="opacity-70">By:</span> {cancelInfo.name} (
+                  {cancelInfo.role})
+                </div>
+                <div>
+                  <span className="opacity-70">At:</span>{" "}
+                  {new Date(cancelInfo.at).toLocaleString()}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
