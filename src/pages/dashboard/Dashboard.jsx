@@ -112,11 +112,13 @@ const Dashboard = () => {
 
   const filteredPaymentModes = Object.entries(paymentModeSales).filter(
     ([mode]) => {
-      // Hide MADA for India
-      if (country === "INDIA" && mode === "MADA") {
-        return false;
+      if (country === "INDIA") {
+        // India: hide MADA
+        return mode !== "MADA";
+      } else {
+        // Non-India: hide UPI
+        return mode !== "UPI";
       }
-      return true;
     },
   );
 
