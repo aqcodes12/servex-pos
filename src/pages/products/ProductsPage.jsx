@@ -59,7 +59,8 @@ const ProductsPage = () => {
       const mapped = (res.data?.data || []).map((p) => ({
         id: p._id,
         name: p.name,
-        category: p.categoryId?.name || p.category || "Uncategorized",
+        categoryId: p.categoryId?._id || "",
+        categoryName: p.categoryId?.name || "Uncategorized",
         sellingPrice: p.sellingPrice,
         costPrice: p.costPrice,
         status: p.isActive,
@@ -238,7 +239,7 @@ const ProductsPage = () => {
                       <td
                         className={`px-6 py-4 ${p.status ? "" : "text-gray-400"}`}
                       >
-                        {p.category}
+                        {p.categoryName}
                       </td>
 
                       <td
