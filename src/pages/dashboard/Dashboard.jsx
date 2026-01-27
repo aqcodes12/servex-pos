@@ -24,6 +24,10 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
 
+  const user = JSON.parse(localStorage.getItem("pos_user") || "{}");
+
+  const country = user?.restaurant?.country?.toUpperCase() || "";
+
   const fetchTodayDashboard = async () => {
     try {
       setLoading(true);
@@ -106,6 +110,16 @@ const Dashboard = () => {
     }
   };
 
+  const filteredPaymentModes = Object.entries(paymentModeSales).filter(
+    ([mode]) => {
+      // Hide MADA for India
+      if (country === "INDIA" && mode === "MADA") {
+        return false;
+      }
+      return true;
+    },
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
@@ -175,13 +189,13 @@ const Dashboard = () => {
             Payment Mode Sales
           </h2>
 
-          {Object.keys(paymentModeSales).length === 0 ? (
+          {filteredPaymentModes.length === 0 ? (
             <div className="bg-white border border-gray-100 rounded-xl p-6 text-center text-text/70">
               No payment data yet
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.entries(paymentModeSales).map(([mode, amount]) => {
+              {filteredPaymentModes.map(([mode, amount]) => {
                 const Icon = getPaymentIcon(mode);
 
                 return (

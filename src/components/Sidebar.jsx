@@ -10,6 +10,7 @@ import {
   User,
   LogOut,
   FileStack,
+  Calculator,
 } from "lucide-react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import BrandLogo from "../assets/flogo.png";
@@ -35,7 +36,7 @@ const Sidebar = () => {
     },
     {
       name: "POS",
-      icon: Coffee,
+      icon: Calculator,
       path: "/pos",
       roles: ["ADMIN", "CASHIER"],
     },
