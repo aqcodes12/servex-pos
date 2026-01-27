@@ -172,7 +172,7 @@ const ProductsPage = () => {
         </div>
 
         {/* Products Table */}
-        <div className="bg-white border rounded-xl overflow-hidden">
+        <div className="bg-white border rounded-xl">
           {/* Search */}
           <div className="p-4 border-b">
             <div className="relative">
@@ -223,29 +223,67 @@ const ProductsPage = () => {
 
                 <tbody className="divide-y">
                   {paginatedProducts.map((p) => (
-                    <tr key={p.id} className="hover:bg-background">
-                      <td className="px-6 py-4 font-medium text-primary">
+                    <tr
+                      key={p.id}
+                      className={`hover:bg-background  ${p.status ? "hover:bg-background" : "bg-gray-50 text-gray-400"}`}
+                    >
+                      <td
+                        className={`px-6 py-4 font-medium ${
+                          p.status ? "text-primary" : "text-gray-400"
+                        }`}
+                      >
                         {p.name}
                       </td>
-                      <td className="px-6 py-4">{p.category}</td>
-                      <td className="px-6 py-4 font-semibold">
+
+                      <td
+                        className={`px-6 py-4 ${p.status ? "" : "text-gray-400"}`}
+                      >
+                        {p.category}
+                      </td>
+
+                      <td
+                        className={`px-6 py-4 font-semibold ${
+                          p.status ? "" : "text-gray-400"
+                        }`}
+                      >
                         <MoneyValue amount={p.sellingPrice} size={12} />
                       </td>
-                      <td className="px-6 py-4 text-text/70">
+
+                      <td
+                        className={`px-6 py-4 ${
+                          p.status ? "text-text/70" : "text-gray-400"
+                        }`}
+                      >
                         <MoneyValue amount={p.costPrice} size={12} />
                       </td>
+
                       <td className="px-6 py-4">
-                        <span
-                          className={`text-xs font-semibold px-3 py-1 rounded-full
-                          ${
-                            p.status
-                              ? "bg-secondary/10 text-secondary"
-                              : "bg-gray-100 text-gray-500"
-                          }`}
-                        >
-                          {p.status ? "Active" : "Inactive"}
-                        </span>
+                        <div className="relative inline-block group">
+                          <span
+                            className={`text-xs font-semibold px-3 py-1 rounded-full cursor-default
+        ${
+          p.status
+            ? "bg-secondary/10 text-secondary"
+            : "bg-gray-100 text-gray-500"
+        }`}
+                          >
+                            {p.status ? "Active" : "Inactive"}
+                          </span>
+
+                          {/* Tooltip for inactive */}
+                          {!p.status && (
+                            <div
+                              className="absolute z-50 hidden group-hover:block
+        left-1/2 -translate-x-1/2 bottom-full mb-2
+        whitespace-nowrap rounded-md
+        bg-black text-white text-xs px-3 py-1.5 shadow-lg"
+                            >
+                              Not available in POS
+                            </div>
+                          )}
+                        </div>
                       </td>
+
                       <td className="px-6 py-4">
                         <button
                           onClick={() => {
