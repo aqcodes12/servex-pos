@@ -3,9 +3,10 @@ import MoneyValue from "../../components/MoneyValue";
 
 const LastOrderBar = ({ order, role, onCancel, onReprint }) => {
   if (!order) return null;
-
   const isCancelled =
-    order.status === "CANCELLED" || order.status === "CANCEL_REQUESTED";
+    order.status === "CANCELLED" ||
+    order.status === "CANCEL_REQUESTED" ||
+    order.cancelRequested === true;
 
   const statusStyles = {
     PAID: "bg-green-50 text-green-700 border-green-200",

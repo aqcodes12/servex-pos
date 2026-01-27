@@ -55,7 +55,9 @@ const RecentOrdersDrawer = ({
 
           {orders.map((o) => {
             const isCancelled =
-              o.status === "CANCELLED" || o.status === "CANCEL_REQUESTED";
+              o.status === "CANCELLED" ||
+              o.status === "CANCEL_REQUESTED" ||
+              o.cancelRequested === true;
 
             return (
               <div
