@@ -55,7 +55,6 @@ const RecentTable = () => {
     <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
       {/* Header */}
       <div className="px-6 py-4 border-b border-gray-100">
-        <h2 className="text-lg font-semibold text-primary">Recent Orders</h2>
         <p className="text-sm text-text/70 mt-1">
           Latest transactions from POS
         </p>
