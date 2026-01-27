@@ -938,7 +938,7 @@ const PosScreen = () => {
             </div>
 
             {/* CART */}
-            <div className="hidden md:flex w-[360px] flex-col border-l border-slate-200">
+            <div className="hidden md:flex w-[300px] flex-col border-l border-slate-200">
               <div className="p-4 border-b">
                 <h2 className="text-lg font-semibold text-primary">
                   Current Bill

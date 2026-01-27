@@ -21,11 +21,27 @@ const Sidebar = () => {
   const location = useLocation();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // mobile
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false); // desktop
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const user = JSON.parse(localStorage.getItem("pos_user") || "{}");
   const role = user?.role; // ADMIN | CASHIER
+
+  const [screen, setScreen] = useState("desktop");
+
+  useEffect(() => {
+    const detectScreen = () => {
+      const w = window.innerWidth;
+
+      if (w < 640) setScreen("mobile");
+      else if (w < 1024) setScreen("tablet");
+      else setScreen("desktop");
+    };
+
+    detectScreen();
+    window.addEventListener("resize", detectScreen);
+    return () => window.removeEventListener("resize", detectScreen);
+  }, []);
 
   const allMenuItems = [
     {
@@ -68,8 +84,18 @@ const Sidebar = () => {
 
   const menuItems = allMenuItems.filter((item) => item.roles.includes(role));
 
+  // const handleMenuClick = (path) => {
+  //   setIsSidebarOpen(false);
+  //   navigate(path);
+  // };
+
   const handleMenuClick = (path) => {
-    setIsSidebarOpen(false);
+    // Only close overlay on mobile
+    if (screen === "mobile") {
+      setIsSidebarOpen(false);
+    }
+
+    // Tablet & desktop: just navigate
     navigate(path);
   };
 
@@ -78,21 +104,39 @@ const Sidebar = () => {
     navigate("/login", { replace: true });
   };
 
-  // Auto-collapse sidebar on POS
+  // // Auto-collapse sidebar on POS
+  // useEffect(() => {
+  //   setIsSidebarCollapsed(location.pathname.startsWith("/pos"));
+  // }, [location.pathname]);
+
   useEffect(() => {
-    setIsSidebarCollapsed(location.pathname.startsWith("/pos"));
-  }, [location.pathname]);
+    // Initial load OR when route changes
+
+    // POS → collapsed for ALL screens
+    if (location.pathname.startsWith("/pos")) {
+      setIsSidebarCollapsed(true);
+      return;
+    }
+
+    // Tablet → always collapsed
+    if (screen === "tablet") {
+      setIsSidebarCollapsed(true);
+      return;
+    }
+
+    // Desktop → keep user preference (do nothing)
+  }, [location.pathname, screen]);
 
   return (
     <>
       <div className="relative min-h-screen bg-background">
         {/* Mobile toggle */}
-        <button
+        {/* <button
           onClick={() => setIsSidebarOpen((v) => !v)}
           className="sm:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-white shadow"
         >
           {isSidebarOpen ? <X /> : <Menu />}
-        </button>
+        </button> */}
 
         {/* Sidebar */}
         <aside

@@ -252,7 +252,7 @@ const SalesPage = () => {
         </div>
 
         {/* Table */}
-        <div className="bg-white border rounded-xl overflow-hidden">
+        <div className="bg-white border rounded-xl">
           {loading ? (
             <div className="divide-y">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -270,126 +270,99 @@ const SalesPage = () => {
               No sales recorded yet
             </div>
           ) : (
-            <table className="w-full text-sm">
-              <thead className="bg-background border-b">
-                <tr className="text-text/70">
-                  <th className="px-6 py-3 text-left">Date</th>
-                  <th className="px-6 py-3 text-left">Invoice</th>
-                  <th className="px-6 py-3 text-left">Amount</th>
-                  <th className="px-6 py-3 text-left">Payment</th>
-                  <th className="px-6 py-3 text-left">Status</th>
-                  <th className="px-6 py-3 text-left">Actions</th>
-                </tr>
-              </thead>
+            <div className="overflow-x-auto">
+              <table className="min-w-[900px] w-full text-sm">
+                <thead className="bg-background border-b">
+                  <tr className="text-text/70">
+                    <th className="px-6 py-3 text-left">Date</th>
+                    <th className="px-6 py-3 text-left">Invoice</th>
+                    <th className="px-6 py-3 text-left">Amount</th>
+                    <th className="px-6 py-3 text-left">Payment</th>
+                    <th className="px-6 py-3 text-left">Status</th>
+                    <th className="px-6 py-3 text-left">Actions</th>
+                  </tr>
+                </thead>
 
-              <tbody className="divide-y">
-                {sales.map((s) => (
-                  <tr key={s.id} className="hover:bg-background">
-                    <td className="px-6 py-4">
-                      <div className="font-medium">{formatDate(s.date)}</div>
-                      <div className="text-xs text-text/60">{s.time}</div>
-                    </td>
+                <tbody className="divide-y">
+                  {sales.map((s) => (
+                    <tr key={s.id} className="hover:bg-background">
+                      <td className="px-6 py-4">
+                        <div className="font-medium">{formatDate(s.date)}</div>
+                        <div className="text-xs text-text/60">{s.time}</div>
+                      </td>
 
-                    <td className="px-6 py-4 font-mono text-secondary">
-                      {s.invoiceNumber}
-                    </td>
+                      <td className="px-6 py-4 font-mono text-secondary">
+                        {s.invoiceNumber}
+                      </td>
 
-                    <td className="px-6 py-4 font-semibold">
-                      <MoneyValue amount={s.totalAmount} size={12} />
-                    </td>
+                      <td className="px-6 py-4 font-semibold">
+                        <MoneyValue amount={s.totalAmount} size={12} />
+                      </td>
 
-                    <td className="px-6 py-4">{s.paymentMode}</td>
+                      <td className="px-6 py-4">{s.paymentMode}</td>
 
-                    <td className="px-6 py-4">
-                      <StatusBadge
-                        status={s.status}
-                        cancelInfo={s.cancelInfo}
-                      />
-                    </td>
+                      <td className="px-6 py-4">
+                        <StatusBadge
+                          status={s.status}
+                          cancelInfo={s.cancelInfo}
+                        />
+                      </td>
 
-                    {/* <td className="px-6 py-4 space-x-2">
-                      <button
-                        onClick={() => {
-                          setSelectedSale(s);
-                          setShowInvoice(true);
-                        }}
-                        className="inline-flex items-center gap-1 text-secondary hover:bg-secondary/10 px-3 py-1.5 rounded-lg"
-                      >
-                        <Eye size={14} />
-                        View
-                      </button>
+                      <td className="px-6 py-4 space-x-2">
+                        {/* View */}
+                        <button
+                          onClick={() => {
+                            setSelectedSale(s);
+                            setShowInvoice(true);
+                          }}
+                          className="inline-flex items-center gap-1 text-secondary hover:bg-secondary/10 px-3 py-1.5 rounded-lg"
+                        >
+                          <Eye size={14} />
+                          View
+                        </button>
 
-                      {s.status !== "CANCELLED" &&
-                        (role === "ADMIN" ||
-                          s.status !== "CANCEL_REQUESTED") && (
-                          <button
-                            onClick={() => handleCancelSale(s)}
-                            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium
-          ${
-            role === "ADMIN"
-              ? "text-red-600 hover:bg-red-50"
-              : "text-yellow-600 hover:bg-yellow-50"
-          }`}
-                          >
-                            <X size={14} />
-                            {role === "ADMIN" ? "Cancel" : "Request Cancel"}
-                          </button>
-                        )}
-                    </td> */}
-                    <td className="px-6 py-4 space-x-2">
-                      {/* View */}
-                      <button
-                        onClick={() => {
-                          setSelectedSale(s);
-                          setShowInvoice(true);
-                        }}
-                        className="inline-flex items-center gap-1 text-secondary hover:bg-secondary/10 px-3 py-1.5 rounded-lg"
-                      >
-                        <Eye size={14} />
-                        View
-                      </button>
+                        {/* ADMIN – Approve / Reject */}
+                        {role === "ADMIN" &&
+                          s.status.includes("CANCEL_REQUESTED") && (
+                            <>
+                              <button
+                                onClick={() => handleCancelSale(s)}
+                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-green-600 hover:bg-green-50"
+                              >
+                                ✓ Approve
+                              </button>
 
-                      {/* ADMIN – Approve / Reject */}
-                      {role === "ADMIN" &&
-                        s.status.includes("CANCEL_REQUESTED") && (
-                          <>
+                              <button
+                                onClick={() => handleRejectCancel(s)}
+                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50"
+                              >
+                                ✕ Reject
+                              </button>
+                            </>
+                          )}
+
+                        {/* Normal cancel / request */}
+                        {!s.status.includes("CANCEL_REQUESTED") &&
+                          s.status[0] !== "CANCELLED" && (
                             <button
                               onClick={() => handleCancelSale(s)}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-green-600 hover:bg-green-50"
-                            >
-                              ✓ Approve
-                            </button>
-
-                            <button
-                              onClick={() => handleRejectCancel(s)}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50"
-                            >
-                              ✕ Reject
-                            </button>
-                          </>
-                        )}
-
-                      {/* Normal cancel / request */}
-                      {!s.status.includes("CANCEL_REQUESTED") &&
-                        s.status[0] !== "CANCELLED" && (
-                          <button
-                            onClick={() => handleCancelSale(s)}
-                            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium
+                              className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium
           ${
             role === "ADMIN"
               ? "text-red-600 hover:bg-red-50"
               : "text-yellow-600 hover:bg-yellow-50"
           }`}
-                          >
-                            <X size={14} />
-                            {role === "ADMIN" ? "Cancel" : "Request Cancel"}
-                          </button>
-                        )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                            >
+                              <X size={14} />
+                              {role === "ADMIN" ? "Cancel" : "Request Cancel"}
+                            </button>
+                          )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
           {/* Pagination */}
           {totalPages > 1 && (
@@ -599,7 +572,7 @@ const StatusBadge = ({ status, cancelInfo }) => {
         return (
           <div key={s} className="relative group cursor-pointer">
             <span
-              className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold cursor-default ${
+              className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold cursor-default whitespace-nowrap ${
                 styles[s] || "bg-gray-100 text-gray-600"
               }`}
             >
