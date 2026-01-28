@@ -133,7 +133,9 @@ const Dashboard = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold text-primary">Dashboard</h1>
-            <p className="text-text/70 mt-1">Today’s performance overview</p>
+            <p className="text-text/70 mt-1">
+              Track today’s revenue, orders, and payment trends in real time.
+            </p>
           </div>
 
           <button
@@ -156,6 +158,9 @@ const Dashboard = () => {
         )}
 
         {/* Stats */}
+        <h2 className="text-xl font-semibold text-primary">
+          Today's Performance
+        </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {loading
             ? Array.from({ length: 4 }).map((_, i) => (
