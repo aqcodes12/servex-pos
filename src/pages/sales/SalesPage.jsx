@@ -3,6 +3,7 @@ import { Eye, Printer, Search, X, Calendar } from "lucide-react";
 import axios from "axios";
 import MoneyValue from "../../components/MoneyValue";
 import { showSuccessToast } from "../../utils/toastConfig";
+import ActionButton from "../../components/ActionButton";
 
 const SalesPage = () => {
   const [sales, setSales] = useState([]);
@@ -27,7 +28,18 @@ const SalesPage = () => {
   const [limit] = useState(10); // rows per page
   const [totalPages, setTotalPages] = useState(1);
 
+  const country = (business?.country || "").toUpperCase();
+  const isIndia = country === "INDIA";
+
   /* ---------------- Helpers ---------------- */
+
+  const normalizePaymentMode = (mode) => {
+    if (!mode) return "";
+    if (mode === "UPI" || mode === "MADA") {
+      return isIndia ? "UPI" : "MADA";
+    }
+    return mode;
+  };
 
   const formatDate = (d) =>
     new Date(d).toLocaleDateString("en-US", {
@@ -234,7 +246,10 @@ const SalesPage = () => {
             className="px-3 py-2 border rounded-lg"
           >
             <option value="">All Payments</option>
-            <option value="UPI">UPI</option>
+            <option value={isIndia ? "UPI" : "MADA"}>
+              {isIndia ? "UPI" : "MADA"}
+            </option>
+
             <option value="CASH">Cash</option>
             <option value="CARD">Card</option>
           </select>
@@ -247,7 +262,7 @@ const SalesPage = () => {
             <option value="">All Status</option>
             <option value="PAID">Paid</option>
             <option value="CANCELLED">Cancelled</option>
-            <option value="CANCEL_REQUESTED">Cancel Requested</option>
+            {/* <option value="CANCEL_REQUESTED">Cancel Requested</option> */}
           </select>
         </div>
 
@@ -308,55 +323,53 @@ const SalesPage = () => {
                         />
                       </td>
 
-                      <td className="px-6 py-4 space-x-2">
-                        {/* View */}
-                        <button
-                          onClick={() => {
-                            setSelectedSale(s);
-                            setShowInvoice(true);
-                          }}
-                          className="inline-flex items-center gap-1 text-secondary hover:bg-secondary/10 px-3 py-1.5 rounded-lg"
-                        >
-                          <Eye size={14} />
-                          View
-                        </button>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2 flex-wrap whitespace-nowrap">
+                          {/* View */}
+                          <ActionButton
+                            icon={Eye}
+                            onClick={() => {
+                              setSelectedSale(s);
+                              setShowInvoice(true);
+                            }}
+                          >
+                            View
+                          </ActionButton>
 
-                        {/* ADMIN – Approve / Reject */}
-                        {role === "ADMIN" &&
-                          s.status.includes("CANCEL_REQUESTED") && (
-                            <>
-                              <button
+                          {/* ADMIN – Approve / Reject */}
+                          {role === "ADMIN" &&
+                            s.status.includes("CANCEL_REQUESTED") && (
+                              <>
+                                <ActionButton
+                                  variant="success"
+                                  onClick={() => handleCancelSale(s)}
+                                >
+                                  ✓ Approve
+                                </ActionButton>
+
+                                <ActionButton
+                                  variant="danger"
+                                  onClick={() => handleRejectCancel(s)}
+                                >
+                                  ✕ Reject
+                                </ActionButton>
+                              </>
+                            )}
+
+                          {/* Normal cancel / request */}
+                          {!s.status.includes("CANCEL_REQUESTED") &&
+                            s.status[0] !== "CANCELLED" && (
+                              <ActionButton
+                                icon={X}
+                                variant={
+                                  role === "ADMIN" ? "danger" : "warning"
+                                }
                                 onClick={() => handleCancelSale(s)}
-                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-green-600 hover:bg-green-50"
                               >
-                                ✓ Approve
-                              </button>
-
-                              <button
-                                onClick={() => handleRejectCancel(s)}
-                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50"
-                              >
-                                ✕ Reject
-                              </button>
-                            </>
-                          )}
-
-                        {/* Normal cancel / request */}
-                        {!s.status.includes("CANCEL_REQUESTED") &&
-                          s.status[0] !== "CANCELLED" && (
-                            <button
-                              onClick={() => handleCancelSale(s)}
-                              className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-medium
-          ${
-            role === "ADMIN"
-              ? "text-red-600 hover:bg-red-50"
-              : "text-yellow-600 hover:bg-yellow-50"
-          }`}
-                            >
-                              <X size={14} />
-                              {role === "ADMIN" ? "Cancel" : "Request Cancel"}
-                            </button>
-                          )}
+                                {role === "ADMIN" ? "Cancel" : "Request Cancel"}
+                              </ActionButton>
+                            )}
+                        </div>
                       </td>
                     </tr>
                   ))}
