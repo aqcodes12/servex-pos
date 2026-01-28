@@ -149,8 +149,6 @@ const PosScreen = () => {
         clientOrderId: generateClientOrderId(),
         items: cart.map((i) => ({ productId: i.id, quantity: i.qty })),
         paymentMode: selectedPaymentMode,
-        taxType,
-        taxRate,
       };
 
       await axios.post("/order/create-order", payload, {
