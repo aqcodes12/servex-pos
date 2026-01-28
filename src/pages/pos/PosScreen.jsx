@@ -74,37 +74,6 @@ const PosScreen = () => {
     }
   };
 
-  const fetchProducts = async ({ searchText = "", category = "" }) => {
-    try {
-      setLoadingProducts(true);
-      setApiError("");
-
-      const res = await axios.get("/product/get-products", {
-        headers: { Authorization: `Bearer ${token}` },
-        params: {
-          ...(searchText ? { search: searchText } : {}),
-          ...(category && category !== "All" ? { category } : {}),
-          isActive: true,
-        },
-      });
-
-      setProducts(
-        (res.data?.data || []).map((p) => ({
-          id: p._id,
-          name: p.name,
-          category: p.category,
-          sellingPrice: p.sellingPrice,
-          costPrice: p.costPrice,
-          isActive: p.isActive,
-        })),
-      );
-    } catch (err) {
-      setApiError(err?.response?.data?.message || "Failed to load products");
-    } finally {
-      setLoadingProducts(false);
-    }
-  };
-
   const fetchAllProducts = async () => {
     const res = await axios.get("/product/get-products", {
       headers: { Authorization: `Bearer ${token}` },
@@ -344,8 +313,9 @@ const PosScreen = () => {
                 <input
                   value={search}
                   onChange={(e) => {
-                    setSearch(e.target.value);
-                    if (e.target.value) setActiveCategory("All");
+                    const value = e.target.value;
+                    setSearch(value);
+                    if (value) setActiveCategory("ALL");
                   }}
                   placeholder="Search products…"
                   className="w-full px-5 py-3 rounded-xl border border-slate-300
