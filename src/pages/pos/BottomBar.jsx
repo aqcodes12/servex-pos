@@ -28,8 +28,8 @@ const BottomBar = ({
   `;
 
   const unselectedStyle = `
-    opacity-80 hover:opacity-100
-  `;
+  opacity-40 hover:opacity-70
+`;
 
   const posUser = JSON.parse(localStorage.getItem("pos_user") || "{}");
   const country = (posUser?.restaurant?.country || "").toUpperCase();
