@@ -26,6 +26,17 @@ const LastOrderBar = ({ order, role, onCancel, onReprint }) => {
       >
         {/* LEFT INFO (never wraps) */}
         <div className="flex items-center gap-4 text-sm flex-nowrap min-w-0">
+          <span
+            className="
+    px-2.5 py-1
+    rounded-md
+    text-xs font-semibold
+    bg-slate-100 text-slate-600
+    whitespace-nowrap
+  "
+          >
+            Last Order
+          </span>
           {/* Invoice */}
           <div className="font-semibold text-slate-700 whitespace-nowrap">
             Invoice:
