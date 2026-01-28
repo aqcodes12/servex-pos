@@ -280,6 +280,8 @@ const PosScreen = () => {
         .filter((i) => i.qty > 0),
     );
 
+  const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+
   const removeItem = (name) => setCart((c) => c.filter((i) => i.name !== name));
 
   const clearBill = () => setCart([]);
@@ -423,8 +425,23 @@ const PosScreen = () => {
                 ))}
               </div>
 
-              <div className="p-4 border-t">
+              {/* <div className="p-4 border-t">
                 <div className="flex justify-between text-xl font-bold">
+                  <span>Total</span>
+                  <MoneyValue amount={total} size={18} />
+                </div>
+              </div> */}
+              <div className="p-4 border-t space-y-1">
+                {/* Order Summary */}
+                <div className="text-left text-sm text-text/80">
+                  <p>Order Summary</p>
+                  <span>
+                    {totalItems} item{totalItems !== 1 ? "s" : ""}
+                  </span>
+                </div>
+
+                {/* Total */}
+                <div className="flex justify-between text-xl font-bold border-t pt-2 mt-2">
                   <span>Total</span>
                   <MoneyValue amount={total} size={18} />
                 </div>
