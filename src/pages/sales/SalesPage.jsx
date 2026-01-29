@@ -74,14 +74,43 @@ const SalesPage = () => {
 
       const { data, pagination } = res.data;
 
+      // setSales(
+      //   (data || []).map((o) => {
+      //     const statuses = [];
+
+      //     // Always show main status
+      //     statuses.push(o.status);
+
+      //     // If cancel requested & still paid → show both
+      //     if (o.status === "PAID" && o.cancelRequested) {
+      //       statuses.push("CANCEL_REQUESTED");
+      //     }
+
+      //     return {
+      //       id: o._id,
+      //       invoiceNumber: o.invoiceNumber,
+      //       date: o.createdAt,
+      //       time: formatTime(o.createdAt),
+      //       totalAmount: o.grandTotal,
+      //       paymentMode: o.paymentMode,
+      //       status: statuses,
+      //       cancelInfo: o.cancelRequested
+      //         ? {
+      //             name: o.createdBy?.name,
+      //             role: o.createdBy?.role,
+      //             at: o.cancelRequestedAt,
+      //           }
+      //         : null,
+      //       items: o.items || [],
+      //     };
+      //   }),
+      // );
+
       setSales(
         (data || []).map((o) => {
           const statuses = [];
-
-          // Always show main status
           statuses.push(o.status);
 
-          // If cancel requested & still paid → show both
           if (o.status === "PAID" && o.cancelRequested) {
             statuses.push("CANCEL_REQUESTED");
           }
@@ -102,6 +131,14 @@ const SalesPage = () => {
                 }
               : null,
             items: o.items || [],
+
+            // ✅ ADD THESE
+            tax: o.tax,
+            taxRate: o.taxRate,
+            taxType: o.taxType,
+            taxAmount: o.taxAmount,
+            subtotal: o.subtotal,
+            grandTotal: o.grandTotal,
           };
         }),
       );
@@ -189,26 +226,6 @@ const SalesPage = () => {
     document.body.innerHTML = originalContent;
     window.location.reload();
   };
-  const TAX_RATE = 5;
-
-  const { subTotal, taxAmount, grandTotal } = useMemo(() => {
-    if (!selectedSale) {
-      return { subTotal: 0, taxAmount: 0, grandTotal: 0 };
-    }
-
-    const sub = selectedSale.items.reduce(
-      (sum, item) => sum + item.sellingPrice * item.quantity,
-      0,
-    );
-
-    const tax = (sub * TAX_RATE) / 100;
-
-    return {
-      subTotal: sub,
-      taxAmount: tax,
-      grandTotal: sub + tax,
-    };
-  }, [selectedSale]);
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6">
@@ -505,14 +522,22 @@ const SalesPage = () => {
                 {/* Subtotal */}
                 <div className="flex justify-between text-sm text-text">
                   <span>Subtotal</span>
-                  <MoneyValue amount={subTotal} size={12} />
+                  <MoneyValue amount={selectedSale.subtotal} size={12} />
                 </div>
 
                 {/* Tax */}
-                <div className="flex justify-between text-sm text-text">
-                  <span>Tax ({TAX_RATE}%)</span>
-                  <MoneyValue amount={taxAmount} size={12} />
-                </div>
+                {selectedSale?.tax?.enabled && (
+                  <div className="flex justify-between text-sm text-text">
+                    <span>
+                      {selectedSale?.tax?.taxType} ({selectedSale?.tax?.rate}%)
+                    </span>
+
+                    <MoneyValue
+                      amount={selectedSale.taxAmount ?? selectedSale.tax.amount}
+                      size={12}
+                    />
+                  </div>
+                )}
 
                 {/* Divider */}
                 <div className="border-t border-gray-300 my-2" />
@@ -520,7 +545,7 @@ const SalesPage = () => {
                 {/* Grand Total */}
                 <div className="flex justify-between text-lg font-bold text-primary">
                   <span>Total Amount</span>
-                  <MoneyValue amount={grandTotal} size={14} />
+                  <MoneyValue amount={selectedSale.grandTotal} size={14} />
                 </div>
 
                 {/* Payment Mode */}

@@ -37,8 +37,6 @@ const PosScreen = () => {
   const [apiError, setApiError] = useState("");
 
   const [selectedPaymentMode, setSelectedPaymentMode] = useState("");
-  const [taxType] = useState("GST");
-  const [taxRate] = useState(5);
 
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
