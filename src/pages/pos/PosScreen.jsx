@@ -155,7 +155,7 @@ const PosScreen = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-
+      setSelectedPaymentMode("");
       setCart([]);
       await fetchLastOrder();
       setShowLastOrder(true);
