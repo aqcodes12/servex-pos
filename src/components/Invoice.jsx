@@ -160,7 +160,16 @@ const Invoice = ({ open, onClose, orderId }) => {
                   </div>
                   <div className="flex justify-between">
                     <span>Date</span>
-                    <span>{new Date(sale.createdAt).toLocaleString()}</span>
+                    <span>
+                      {new Date(sale.createdAt).toLocaleString("en-IN", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "numeric",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                    </span>
                   </div>
                 </div>
 
