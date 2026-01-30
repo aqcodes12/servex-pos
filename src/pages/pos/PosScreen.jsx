@@ -10,6 +10,7 @@ import { Clock, LogOut } from "lucide-react";
 import LastOrderBar from "./LastOrderBar";
 import RecentOrdersDrawer from "./RecentOrdersDrawer";
 import { showSuccessToast } from "../../utils/toastConfig";
+import Invoice from "../../components/Invoice";
 
 const PosScreen = () => {
   const navigate = useNavigate();
@@ -39,6 +40,9 @@ const PosScreen = () => {
   const [selectedPaymentMode, setSelectedPaymentMode] = useState("");
 
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  const [showInvoice, setShowInvoice] = useState(false);
+  const [invoiceOrderId, setInvoiceOrderId] = useState(null);
 
   const total = cart.reduce(
     (sum, item) => sum + item.sellingPrice * item.qty,
@@ -149,16 +153,26 @@ const PosScreen = () => {
         paymentMode: selectedPaymentMode,
       };
 
-      await axios.post("/order/create-order", payload, {
+      const res = await axios.post("/order/create-order", payload, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
+
+      const createdOrderId = res.data?.data?._id;
+
+      // ✅ reset POS
       setSelectedPaymentMode("");
       setCart([]);
       await fetchLastOrder();
       setShowLastOrder(true);
+
+      // ✅ OPEN INVOICE
+      if (createdOrderId) {
+        setInvoiceOrderId(createdOrderId);
+        setShowInvoice(true);
+      }
       showSuccessToast("Order created successfully");
     } catch (err) {
       setApiError(err?.response?.data?.message || "Failed to create order");
@@ -481,6 +495,17 @@ const PosScreen = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {showInvoice && invoiceOrderId && (
+        <Invoice
+          open={showInvoice}
+          orderId={invoiceOrderId}
+          onClose={() => {
+            setShowInvoice(false);
+            setInvoiceOrderId(null);
+          }}
+        />
       )}
     </>
   );
