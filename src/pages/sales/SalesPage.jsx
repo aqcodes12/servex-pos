@@ -4,6 +4,7 @@ import axios from "axios";
 import MoneyValue from "../../components/MoneyValue";
 import { showSuccessToast } from "../../utils/toastConfig";
 import ActionButton from "../../components/ActionButton";
+import Invoice from "../../components/Invoice";
 
 const SalesPage = () => {
   const [sales, setSales] = useState([]);
@@ -11,7 +12,7 @@ const SalesPage = () => {
   const [apiError, setApiError] = useState("");
 
   const [showInvoice, setShowInvoice] = useState(false);
-  const [selectedSale, setSelectedSale] = useState(null);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [dateFilter, setDateFilter] = useState("");
@@ -346,7 +347,7 @@ const SalesPage = () => {
                           <ActionButton
                             icon={Eye}
                             onClick={() => {
-                              setSelectedSale(s);
+                              setSelectedOrderId(s.id);
                               setShowInvoice(true);
                             }}
                           >
@@ -423,165 +424,15 @@ const SalesPage = () => {
         </div>
       </div>
 
-      {/* ✅ Invoice Modal */}
-      {showInvoice && selectedSale && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h2 className="text-2xl font-bold text-primary">
-                Invoice Preview
-              </h2>
-              <button
-                onClick={() => setShowInvoice(false)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <X className="w-5 h-5 text-gray-500" />
-              </button>
-            </div>
-
-            <div id="invoice-print-content" className="p-8">
-              <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold text-primary mb-1">
-                  {business.name || "Business Name"}
-                </h1>
-
-                {business.address && (
-                  <p className="text-text opacity-70">{business.address}</p>
-                )}
-
-                {business.phone && (
-                  <p className="text-text opacity-70">
-                    Phone: {business.phone}
-                  </p>
-                )}
-
-                {business.trn && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    TRN: {business.trn}
-                  </p>
-                )}
-              </div>
-
-              <div className="flex justify-between mb-8 pb-6 border-b-2 border-gray-200">
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Invoice Number</p>
-                  <p className="font-mono font-bold text-lg text-secondary">
-                    {selectedSale.invoiceNumber}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-500 mb-1">Date & Time</p>
-                  <p className="font-medium text-text">
-                    {formatDate(selectedSale.date)}
-                  </p>
-                  <p className="text-sm text-gray-500">{selectedSale.time}</p>
-                </div>
-              </div>
-
-              <div className="mb-8">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b-2 border-gray-200">
-                      <th className="text-left py-3 text-sm font-semibold text-primary">
-                        Item
-                      </th>
-                      <th className="text-center py-3 text-sm font-semibold text-primary">
-                        Qty
-                      </th>
-                      <th className="text-right py-3 text-sm font-semibold text-primary">
-                        Price
-                      </th>
-                      <th className="text-right py-3 text-sm font-semibold text-primary">
-                        Total
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {selectedSale.items.map((item, index) => (
-                      <tr key={index} className="border-b border-gray-100">
-                        <td className="py-3 text-text">{item.name}</td>
-                        <td className="py-3 text-center text-text">
-                          {item.quantity}
-                        </td>
-                        <td className="py-3 text-right text-text">
-                          <MoneyValue amount={item.sellingPrice} size={12} />
-                        </td>
-                        <td className="py-3 text-right font-medium text-text">
-                          <MoneyValue
-                            amount={item.quantity * item.sellingPrice}
-                            size={12}
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="w-64 space-y-2">
-                {/* Subtotal */}
-                <div className="flex justify-between text-sm text-text">
-                  <span>Subtotal</span>
-                  <MoneyValue amount={selectedSale.subtotal} size={12} />
-                </div>
-
-                {/* Tax */}
-                {selectedSale?.tax?.enabled && (
-                  <div className="flex justify-between text-sm text-text">
-                    <span>
-                      {selectedSale?.tax?.taxType} ({selectedSale?.tax?.rate}%)
-                    </span>
-
-                    <MoneyValue
-                      amount={selectedSale.taxAmount ?? selectedSale.tax.amount}
-                      size={12}
-                    />
-                  </div>
-                )}
-
-                {/* Divider */}
-                <div className="border-t border-gray-300 my-2" />
-
-                {/* Grand Total */}
-                <div className="flex justify-between text-lg font-bold text-primary">
-                  <span>Total Amount</span>
-                  <MoneyValue amount={selectedSale.grandTotal} size={14} />
-                </div>
-
-                {/* Payment Mode */}
-                <div className="flex justify-between py-1">
-                  <span className="text-sm text-gray-500">Payment Mode:</span>
-                  <span className="text-sm font-medium text-blue-600">
-                    {selectedSale.paymentMode}
-                  </span>
-                </div>
-              </div>
-
-              <div className="text-center pt-6 border-t border-gray-200">
-                <p className="text-text opacity-70 mb-2">
-                  Thank you for your business!
-                </p>
-                <p className="text-sm text-gray-500">Please visit again</p>
-              </div>
-            </div>
-
-            <div className="flex gap-3 p-6 border-t border-gray-200">
-              <button
-                onClick={() => setShowInvoice(false)}
-                className="flex-1 px-6 py-3 border border-gray-300 text-text rounded-lg hover:bg-gray-50 transition-colors font-medium"
-              >
-                Close
-              </button>
-              <button
-                onClick={() => handlePrint()}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-accent text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium"
-              >
-                <Printer className="w-5 h-5" />
-                Print Invoice
-              </button>
-            </div>
-          </div>
-        </div>
+      {showInvoice && selectedOrderId && (
+        <Invoice
+          open={showInvoice}
+          orderId={selectedOrderId}
+          onClose={() => {
+            setShowInvoice(false);
+            setSelectedOrderId(null);
+          }}
+        />
       )}
     </div>
   );
