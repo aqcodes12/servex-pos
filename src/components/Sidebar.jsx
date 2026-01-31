@@ -116,26 +116,6 @@ const Sidebar = () => {
     navigate("/login", { replace: true });
   };
 
-  // // Auto-collapse sidebar on POS
-
-  // useEffect(() => {
-  //   // Initial load OR when route changes
-
-  //   // POS → collapsed for ALL screens
-  //   if (location.pathname.startsWith("/pos")) {
-  //     setIsSidebarCollapsed(true);
-  //     return;
-  //   }
-
-  //   // Tablet → always collapsed
-  //   if (screen === "tablet") {
-  //     setIsSidebarCollapsed(true);
-  //     return;
-  //   }
-
-  //   // Desktop → keep user preference (do nothing)
-  // }, [location.pathname, screen]);
-
   useEffect(() => {
     // POS → always collapsed
     if (location.pathname.startsWith("/pos")) {
