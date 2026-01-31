@@ -11,6 +11,7 @@ import LastOrderBar from "./LastOrderBar";
 import RecentOrdersDrawer from "./RecentOrdersDrawer";
 import { showSuccessToast } from "../../utils/toastConfig";
 import Invoice from "../../components/Invoice";
+import UpiPaymentModal from "./UpiPaymentModal";
 
 const PosScreen = () => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const PosScreen = () => {
   const [recentOrders, setRecentOrders] = useState([]);
   const [showLastOrder, setShowLastOrder] = useState(false);
   const [lastOrder, setLastOrder] = useState(null);
-
+  const [showUpiModal, setShowUpiModal] = useState(false);
   const [categories, setCategories] = useState([{ id: "ALL", name: "All" }]);
   const [activeCategory, setActiveCategory] = useState("ALL");
 
@@ -434,7 +435,15 @@ const PosScreen = () => {
             canPay={canPay}
             clearBill={clearBill}
             selectedPaymentMode={selectedPaymentMode}
-            onSelectPaymentMode={setSelectedPaymentMode}
+            // onSelectPaymentMode={setSelectedPaymentMode}
+            onSelectPaymentMode={(mode) => {
+              if (mode === "UPI") {
+                setSelectedPaymentMode("UPI");
+                setShowUpiModal(true);
+              } else {
+                setSelectedPaymentMode(mode);
+              }
+            }}
             onComplete={createOrder}
             loading={creatingOrder}
           />
@@ -507,6 +516,19 @@ const PosScreen = () => {
           }}
         />
       )}
+
+      <UpiPaymentModal
+        open={showUpiModal}
+        total={total}
+        onClose={() => {
+          setShowUpiModal(false);
+          setSelectedPaymentMode("");
+        }}
+        onPaid={() => {
+          setShowUpiModal(false);
+          createOrder();
+        }}
+      />
     </>
   );
 };
