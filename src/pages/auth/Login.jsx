@@ -210,7 +210,7 @@ const LoginPage = () => {
             Welcome to Dineics
           </h1>
           <p className="text-gray-600 mt-3 text-sm">
-            Log in to manage your orders, inventory, and sales.
+            Log in to manage your orders and sales.
           </p>
         </div>
       </div>
