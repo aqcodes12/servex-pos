@@ -1,1 +1,1 @@
-export const BASE_URL = "http://dineics.com:5000/api";
+export const BASE_URL = "https://dineics.com:5000/api";

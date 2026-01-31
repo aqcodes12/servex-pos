@@ -82,12 +82,15 @@ const ProductsPage = () => {
   /* ---------------- Filters ---------------- */
 
   const filteredProducts = products.filter((p) => {
-    const matchesSearch =
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.category.toLowerCase().includes(searchTerm.toLowerCase());
+    const search = searchTerm.toLowerCase();
+
+    const name = p.name?.toLowerCase() || "";
+    const category = p.categoryName?.toLowerCase() || "";
+
+    const matchesSearch = name.includes(search) || category.includes(search);
 
     const matchesCategory =
-      activeCategory === "All" || p.category === activeCategory;
+      activeCategory === "All" || p.categoryName === activeCategory;
 
     return matchesSearch && matchesCategory;
   });
