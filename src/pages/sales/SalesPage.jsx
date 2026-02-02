@@ -287,6 +287,7 @@ const SalesPage = () => {
             {/* Filters Group */}
             <div className="flex flex-wrap sm:flex-nowrap gap-3">
               {/* Payment Mode Filter */}
+
               <select
                 value={paymentMode}
                 onChange={(e) => setPaymentMode(e.target.value)}
@@ -304,6 +305,20 @@ const SalesPage = () => {
               </select>
 
               {/* Status Filter */}
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl 
+                   focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 
+                   transition-all duration-200 outline-none text-sm font-medium text-gray-700
+                   cursor-pointer hover:bg-gray-100"
+              >
+                <option value="">All Status</option>
+                <option value="PAID">Paid</option>
+                <option value="CANCELLED">Cancelled</option>
+              </select>
+
+              {/* Category Filter */}
               <select
                 value={selectedCategory}
                 onChange={(e) => {
