@@ -65,12 +65,9 @@ const UpiPaymentModal = ({ open, total, onPaid, onClose }) => {
         setLoading(true);
         setError("");
 
-        const res = await axios.get(
-          "https://dineics.onrender.com/api/restaurant/get-upi",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
+        const res = await axios.get("/restaurant/get-upi", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         const data = res.data?.data;
 
