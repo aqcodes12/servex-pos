@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Eye, Printer, Search, X, Calendar } from "lucide-react";
 import axios from "axios";
 import MoneyValue from "../../components/MoneyValue";
@@ -15,9 +15,10 @@ const SalesPage = () => {
   const [selectedOrderId, setSelectedOrderId] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [dateFilter, setDateFilter] = useState("");
   const [paymentMode, setPaymentMode] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const posUser = JSON.parse(localStorage.getItem("pos_user"));
   const business = posUser?.restaurant || {};
@@ -33,14 +34,6 @@ const SalesPage = () => {
   const isIndia = country === "INDIA";
 
   /* ---------------- Helpers ---------------- */
-
-  const normalizePaymentMode = (mode) => {
-    if (!mode) return "";
-    if (mode === "UPI" || mode === "MADA") {
-      return isIndia ? "UPI" : "MADA";
-    }
-    return mode;
-  };
 
   const formatDate = (d) =>
     new Date(d).toLocaleDateString("en-US", {
@@ -70,42 +63,12 @@ const SalesPage = () => {
           search: searchTerm || undefined,
           paymentMode: paymentMode || undefined,
           status: statusFilter || undefined,
+          startDate: startDate || undefined,
+          endDate: endDate || undefined,
         },
       });
 
       const { data, pagination } = res.data;
-
-      // setSales(
-      //   (data || []).map((o) => {
-      //     const statuses = [];
-
-      //     // Always show main status
-      //     statuses.push(o.status);
-
-      //     // If cancel requested & still paid → show both
-      //     if (o.status === "PAID" && o.cancelRequested) {
-      //       statuses.push("CANCEL_REQUESTED");
-      //     }
-
-      //     return {
-      //       id: o._id,
-      //       invoiceNumber: o.invoiceNumber,
-      //       date: o.createdAt,
-      //       time: formatTime(o.createdAt),
-      //       totalAmount: o.grandTotal,
-      //       paymentMode: o.paymentMode,
-      //       status: statuses,
-      //       cancelInfo: o.cancelRequested
-      //         ? {
-      //             name: o.createdBy?.name,
-      //             role: o.createdBy?.role,
-      //             at: o.cancelRequestedAt,
-      //           }
-      //         : null,
-      //       items: o.items || [],
-      //     };
-      //   }),
-      // );
 
       setSales(
         (data || []).map((o) => {
@@ -154,7 +117,7 @@ const SalesPage = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, [page, searchTerm, paymentMode, statusFilter]);
+  }, [page, searchTerm, paymentMode, statusFilter, startDate, endDate]);
 
   const handleCancelSale = async (sale) => {
     try {
@@ -214,20 +177,6 @@ const SalesPage = () => {
     }
   };
 
-  /* ---------------- Filters ---------------- */
-
-  /* ---------------- UI ---------------- */
-
-  const handlePrint = (sale = selectedSale) => {
-    const printContent = document.getElementById("invoice-print-content");
-    const originalContent = document.body.innerHTML;
-
-    document.body.innerHTML = printContent.innerHTML;
-    window.print();
-    document.body.innerHTML = originalContent;
-    window.location.reload();
-  };
-
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -246,42 +195,101 @@ const SalesPage = () => {
           </div>
         )}
 
-        {/* Filters */}
-        <div className="bg-white border rounded-xl p-4 flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              placeholder="Search invoice…"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-secondary"
-            />
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <div className="flex flex-col lg:flex-row gap-4">
+            {/* Search Input */}
+            <div className="relative flex-1 min-w-0">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+              <input
+                placeholder="Search invoices..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-12 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl 
+                   focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 
+                   transition-all duration-200 outline-none text-sm"
+              />
+            </div>
+
+            {/* Filters Group */}
+            <div className="flex flex-wrap sm:flex-nowrap gap-3">
+              {/* Payment Mode Filter */}
+              <select
+                value={paymentMode}
+                onChange={(e) => setPaymentMode(e.target.value)}
+                className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl 
+                   focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 
+                   transition-all duration-200 outline-none text-sm font-medium text-gray-700
+                   cursor-pointer hover:bg-gray-100"
+              >
+                <option value="">All Payments</option>
+                <option value={isIndia ? "UPI" : "MADA"}>
+                  {isIndia ? "UPI" : "MADA"}
+                </option>
+                <option value="CASH">Cash</option>
+                <option value="CARD">Card</option>
+              </select>
+
+              {/* Status Filter */}
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl 
+                   focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 
+                   transition-all duration-200 outline-none text-sm font-medium text-gray-700
+                   cursor-pointer hover:bg-gray-100"
+              >
+                <option value="">All Status</option>
+                <option value="PAID">Paid</option>
+                <option value="CANCELLED">Cancelled</option>
+              </select>
+
+              {/* Date Range */}
+              <div className="flex gap-2 items-center bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5">
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="px-2 py-1 bg-transparent border-0 outline-none text-sm font-medium text-gray-700
+                     cursor-pointer focus:ring-0"
+                />
+
+                <span className="text-gray-400 text-sm">→</span>
+
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="px-2 py-1 bg-transparent border-0 outline-none text-sm font-medium text-gray-700
+                     cursor-pointer focus:ring-0"
+                />
+
+                {(startDate || endDate) && (
+                  <button
+                    onClick={() => {
+                      setStartDate("");
+                      setEndDate("");
+                    }}
+                    className="ml-1 p-1.5 hover:bg-red-50 rounded-lg text-red-500 transition-colors"
+                    title="Clear dates"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
-
-          <select
-            value={paymentMode}
-            onChange={(e) => setPaymentMode(e.target.value)}
-            className="px-3 py-2 border rounded-lg"
-          >
-            <option value="">All Payments</option>
-            <option value={isIndia ? "UPI" : "MADA"}>
-              {isIndia ? "UPI" : "MADA"}
-            </option>
-
-            <option value="CASH">Cash</option>
-            <option value="CARD">Card</option>
-          </select>
-
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 border rounded-lg"
-          >
-            <option value="">All Status</option>
-            <option value="PAID">Paid</option>
-            <option value="CANCELLED">Cancelled</option>
-            {/* <option value="CANCEL_REQUESTED">Cancel Requested</option> */}
-          </select>
         </div>
 
         {/* Table */}
