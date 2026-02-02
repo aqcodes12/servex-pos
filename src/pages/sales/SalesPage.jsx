@@ -13,7 +13,8 @@ const SalesPage = () => {
 
   const [showInvoice, setShowInvoice] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
-
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [paymentMode, setPaymentMode] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -115,9 +116,85 @@ const SalesPage = () => {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await axios.get("/category/categories", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setCategories(res.data?.data || []);
+    } catch (err) {
+      setApiError("Failed to load categories");
+    }
+  };
+
+  const fetchOrdersByCategory = async (categoryId) => {
+    try {
+      setLoading(true);
+      setApiError("");
+
+      const res = await axios.get(
+        `https://dineics.onrender.com/api/order/${categoryId}/getOrdersbyCategory`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const { data } = res.data;
+
+      setSales(
+        (data || []).map((o) => ({
+          id: o._id,
+          invoiceNumber: o.invoiceNumber,
+          date: o.createdAt,
+          time: formatTime(o.createdAt),
+          totalAmount: o.grandTotal,
+          paymentMode: o.paymentMode,
+          status: [o.status],
+          items: o.items || [],
+          tax: o.tax,
+          subtotal: o.subtotal,
+          grandTotal: o.grandTotal,
+        })),
+      );
+
+      setTotalPages(1); // since this API doesn’t return pagination
+    } catch (err) {
+      setApiError("Failed to load category orders");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetchOrders();
-  }, [page, searchTerm, paymentMode, statusFilter, startDate, endDate]);
+    fetchCategories();
+  }, []);
+
+  // useEffect(() => {
+  //   fetchOrders();
+  // }, [page, searchTerm, paymentMode, statusFilter, startDate, endDate]);
+
+  useEffect(() => {
+    if (selectedCategory) {
+      fetchOrdersByCategory(selectedCategory);
+    } else {
+      fetchOrders();
+    }
+  }, [
+    page,
+    searchTerm,
+    paymentMode,
+    statusFilter,
+    startDate,
+    endDate,
+    selectedCategory,
+  ]);
 
   const handleCancelSale = async (sale) => {
     try {
@@ -231,16 +308,23 @@ const SalesPage = () => {
 
               {/* Status Filter */}
               <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+                value={selectedCategory}
+                onChange={(e) => {
+                  setSelectedCategory(e.target.value);
+                  setPage(1); // reset pagination on change
+                }}
                 className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl 
-                   focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 
-                   transition-all duration-200 outline-none text-sm font-medium text-gray-700
-                   cursor-pointer hover:bg-gray-100"
+     focus:bg-white focus:border-secondary focus:ring-2 focus:ring-secondary/20 
+     transition-all duration-200 outline-none text-sm font-medium text-gray-700
+     cursor-pointer hover:bg-gray-100 min-w-[160px]"
               >
-                <option value="">All Status</option>
-                <option value="PAID">Paid</option>
-                <option value="CANCELLED">Cancelled</option>
+                <option value="">All Categories</option>
+
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </option>
+                ))}
               </select>
 
               {/* Date Range */}
