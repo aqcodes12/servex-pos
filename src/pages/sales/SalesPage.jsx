@@ -137,14 +137,11 @@ const SalesPage = () => {
       setLoading(true);
       setApiError("");
 
-      const res = await axios.get(
-        `https://dineics.onrender.com/api/order/${categoryId}/getOrdersbyCategory`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const res = await axios.get(`/order/${categoryId}/getOrdersbyCategory`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
 
       const { data } = res.data;
 
